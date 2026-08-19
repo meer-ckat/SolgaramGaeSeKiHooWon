@@ -59,9 +59,9 @@ apps-script/Code.gs     Apps Script 소스 (시트에 붙여넣어 배포)
 
 ## 4. Apps Script 만들기 & 배포
 
-1. 스프레드시트에서 **확장 프로그램 → Apps Script** 열기
+1. script.google.com에서 **새 프로젝트** 생성 (시트와 같은 계정으로)
 2. 기본 코드를 지우고 `apps-script/Code.gs` 내용을 붙여넣기
-3. 목표 금액이 바뀌면 코드 상단 `GOAL` 값을 수정
+3. 코드 상단 `SHEET_ID`에 시트 주소의 `/d/`와 `/edit` 사이 문자열 입력, 목표 금액은 `GOAL` 수정
 4. **배포 → 새 배포 → 유형: 웹 앱**
    - 실행 계정: **나**
    - 액세스 권한: **모든 사용자**

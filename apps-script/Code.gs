@@ -1,7 +1,8 @@
 // 옥도단 후원 — 공개 현황 JSON 엔드포인트 (읽기 전용)
 //
-// 이 스크립트는 장부 스프레드시트에 "확장 프로그램 > Apps Script"로
-// 연결(container-bound)해서 사용합니다. 시트 ID를 코드에 적을 필요가 없습니다.
+// script.google.com에서 독립(standalone) 프로젝트로 만들어 배포합니다.
+// SHEET_ID에 장부 스프레드시트 ID(주소창 /d/와 /edit 사이 문자열)를 넣으세요.
+// 이 ID는 서버 코드에만 있고 웹에는 노출되지 않습니다.
 //
 // 시트 이름: ledger
 // 열 순서:  date | type | amount | description | public
@@ -12,10 +13,11 @@
 // public=TRUE 행의 date/description/amount만 외부로 나갑니다.
 
 const GOAL = 300000;        // 목표 금액(원)
+const SHEET_ID = "1e5964jmcb_ZCQ4QlAgLr1oo56ARnlHGrn5amkAp1nP0";
 const SHEET_NAME = "ledger";
 
 function doGet() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
   const rows = sheet ? sheet.getDataRange().getValues() : [];
 
   let received = 0;

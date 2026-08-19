@@ -1,8 +1,8 @@
 // 옥도단 후원 — 현황 로딩 + 지출 내역 + 계좌 복사
 
 const CONFIG = {
-  // Apps Script 웹 앱 배포 URL을 여기에 붙여넣으세요. (README 참고)
-  ledgerEndpoint: "",
+  // Apps Script 웹 앱 배포 URL (README 참고)
+  ledgerEndpoint: "https://script.google.com/macros/s/AKfycbzPcRxtHiSduSJUSHVbA45sGkInLf8mjmgz_XzAwASZEddf7IifiFY1N2IHr6bqyMUKug/exec",
 };
 
 const KRW = new Intl.NumberFormat("ko-KR");
