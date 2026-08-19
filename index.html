@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>옥도단 후원</title>
+  <meta name="description" content="솔가람고등학교에서 지내는 옥희와 도치를 위한 학생 운영 후원 페이지">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <img src="assets/solgaram-logo.svg" alt="솔가람고등학교 로고" class="logo"
+       onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+  <span class="logo-text" hidden>솔가람고등학교</span>
+  <span class="header-note">학생 운영 후원 페이지</span>
+</header>
+
+<main>
+  <section class="hero" aria-labelledby="page-title">
+    <h1 id="page-title">옥도단 후원</h1>
+    <p class="subtitle">옥희와 도치를 위한 후원 페이지</p>
+    <p class="intro">
+      후원금은 솔가람고등학교에서 지내는 옥희와 도치의
+      사료, 간식, 병원비, 생활용품에 사용됩니다.
+    </p>
+    <a href="#donate" class="cta">후원하기</a>
+  </section>
+
+  <section aria-labelledby="status-title">
+    <h2 id="status-title">현재 후원금</h2>
+    <p class="big-amount" id="received">—</p>
+    <div class="bar" role="progressbar" aria-labelledby="status-title"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar">
+      <div class="bar-fill" id="bar-fill"></div>
+    </div>
+    <p class="percent" id="percent"></p>
+    <dl class="figures">
+      <div><dt>목표</dt><dd id="goal">—</dd></div>
+      <div><dt>사용</dt><dd id="spent">—</dd></div>
+      <div><dt>잔액</dt><dd id="balance">—</dd></div>
+    </dl>
+    <p class="note" id="load-status" role="status" hidden>후원 현황을 불러오지 못했습니다.</p>
+  </section>
+
+  <section aria-labelledby="about-title">
+    <h2 id="about-title">옥희 · 도치</h2>
+    <p>
+      옥희와 도치는 솔가람고등학교에서 지내는 두 마리 강아지입니다.
+      학생들이 직접 돌보고 있으며, 후원금은 두 강아지를 위해서만 사용하고
+      사용 내역을 아래에 모두 공개합니다.
+    </p>
+  </section>
+
+  <section id="donate" aria-labelledby="donate-title">
+    <h2 id="donate-title">후원하기</h2>
+    <dl class="account">
+      <div><dt>은행</dt><dd>OO은행</dd></div>
+      <div><dt>계좌번호</dt><dd id="account-number">000-0000-0000</dd></div>
+      <div><dt>예금주</dt><dd>홍길동</dd></div>
+    </dl>
+    <button type="button" id="copy-account" class="cta">계좌번호 복사</button>
+    <p class="copy-feedback" id="copy-feedback" role="status" aria-live="polite"></p>
+    <p class="note">토스 또는 사용하는 은행 앱에서 위 계좌로 송금할 수 있습니다.</p>
+    <p class="note">
+      이 페이지는 결제를 처리하지 않으며, 카드번호·비밀번호 등
+      어떤 금융 정보도 입력받지 않습니다.
+    </p>
+  </section>
+
+  <section aria-labelledby="ledger-title">
+    <h2 id="ledger-title">사용 내역</h2>
+    <table class="expenses">
+      <caption class="visually-hidden">공개된 지출 내역</caption>
+      <thead>
+        <tr>
+          <th scope="col">날짜</th>
+          <th scope="col">내용</th>
+          <th scope="col" class="num">금액</th>
+        </tr>
+      </thead>
+      <tbody id="expenses-body">
+        <tr><td colspan="3" class="empty">내역을 불러오는 중입니다.</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  <p>
+    이 페이지는 솔가람고등학교 학생들이 운영하는 후원 안내 페이지이며,
+    학교 공식 페이지가 아닙니다.
+  </p>
+  <p>문의: <a href="mailto:example@example.com">example@example.com</a></p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

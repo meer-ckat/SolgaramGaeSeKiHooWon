@@ -1,0 +1,274 @@
+/* 옥도단 후원 — 모바일 우선, 시스템 폰트, 문서형 레이아웃 */
+
+:root {
+  --text: #191919;
+  --muted: #666;
+  --line: #ddd;
+  --bar-bg: #e8e8e8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  color: var(--text);
+  background: #fff;
+  line-height: 1.65;
+}
+
+.site-header,
+main,
+footer {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* 헤더 */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.logo {
+  height: 2rem;
+  width: auto;
+}
+
+.logo-text {
+  font-weight: 700;
+}
+
+.header-note {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* 공통 */
+section {
+  margin: 3.5rem 0;
+}
+
+h1 {
+  font-size: 2.2rem;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.15rem;
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.note {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0.75rem 0 0;
+}
+
+/* 히어로 */
+.hero {
+  margin-top: 3rem;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin: 0.25rem 0 1.25rem;
+}
+
+.intro {
+  margin: 0 0 2rem;
+  max-width: 34em;
+}
+
+.cta {
+  display: inline-block;
+  background: var(--text);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 0.85rem 2.5rem;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cta:hover {
+  background: #000;
+}
+
+/* 후원 현황 */
+.big-amount {
+  font-size: clamp(2.6rem, 9vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+  line-height: 1.15;
+}
+
+.bar {
+  height: 6px;
+  background: var(--bar-bg);
+}
+
+.bar-fill {
+  height: 100%;
+  width: 0;
+  background: var(--text);
+}
+
+.percent {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0.5rem 0 1.5rem;
+}
+
+.figures {
+  margin: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.figures div {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.4rem;
+  max-width: 22em;
+}
+
+.figures dt {
+  color: var(--muted);
+}
+
+.figures dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 후원하기 */
+.account {
+  margin: 0 0 1.5rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.account div {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.4rem;
+  max-width: 22em;
+}
+
+.account dt {
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-right: 1rem;
+}
+
+.account dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+  text-align: right;
+}
+
+.copy-feedback {
+  font-size: 0.9rem;
+  margin: 0.6rem 0 0;
+  min-height: 1.5em;
+}
+
+/* 사용 내역 */
+.expenses {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.expenses th,
+.expenses td {
+  text-align: left;
+  padding: 0.5rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.expenses th {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.expenses .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.expenses .empty {
+  color: var(--muted);
+  text-align: center;
+}
+
+/* 푸터 */
+footer {
+  border-top: 1px solid var(--line);
+  margin-top: 4rem;
+  padding-top: 1.25rem;
+  padding-bottom: 2.5rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+footer a {
+  color: inherit;
+}
+
+/* 접근성 */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 2px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* 모바일: CTA 전체 폭 */
+@media (max-width: 480px) {
+  .cta {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+}
