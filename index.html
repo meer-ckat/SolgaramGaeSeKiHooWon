@@ -57,7 +57,9 @@
       <li class="gallery-empty">사진을 불러오는 중입니다.</li>
     </ul>
 
-    <div id="login-bar" class="login-bar">
+    <div class="comments" data-board="photos">
+      <h3 class="comments-title">사진첩 댓글</h3>
+      <div id="login-bar" class="login-bar">
       <p class="note">
         댓글을 쓰려면 구글 로그인이 필요합니다. 이메일 주소를 받아 두지만
         화면에는 닉네임만 보이며, 부적절한 댓글 작성자를 차단하는 용도로만 씁니다.
@@ -73,8 +75,6 @@
       <button type="button" id="google-logout" class="cta cta-quiet" hidden>로그아웃</button>
     </div>
 
-    <div class="comments" data-board="photos">
-      <h3 class="comments-title">사진첩 댓글</h3>
       <form class="comment-form" hidden>
         <label class="visually-hidden" for="body-photos">댓글</label>
         <input type="text" id="body-photos" class="comment-body" maxlength="200"
@@ -82,7 +82,6 @@
         <button type="submit" class="cta cta-quiet">등록</button>
         <p class="form-msg comment-msg" role="status" aria-live="polite"></p>
       </form>
-      <p class="note comment-login-note">댓글을 쓰려면 위쪽에서 구글 계정으로 로그인해 주세요. 화면에는 닉네임만 보이고 이메일은 공개되지 않습니다.</p>
       <ul class="comment-list"><li class="comment-empty">불러오는 중입니다.</li></ul>
     </div>
   </section>
@@ -146,7 +145,7 @@
         <button type="submit" class="cta cta-quiet">등록</button>
         <p class="form-msg comment-msg" role="status" aria-live="polite"></p>
       </form>
-      <p class="note comment-login-note">댓글을 쓰려면 위쪽에서 구글 계정으로 로그인해 주세요. 화면에는 닉네임만 보이고 이메일은 공개되지 않습니다.</p>
+      <p class="note comment-login-note">댓글은 <a href="#gallery-title">사진첩</a>에서 로그인한 뒤 쓸 수 있습니다.</p>
       <ul class="comment-list"><li class="comment-empty">불러오는 중입니다.</li></ul>
     </div>
   </section>
@@ -177,7 +176,7 @@
         <button type="submit" class="cta cta-quiet">등록</button>
         <p class="form-msg comment-msg" role="status" aria-live="polite"></p>
       </form>
-      <p class="note comment-login-note">댓글을 쓰려면 위쪽에서 구글 계정으로 로그인해 주세요. 화면에는 닉네임만 보이고 이메일은 공개되지 않습니다.</p>
+      <p class="note comment-login-note">댓글은 <a href="#gallery-title">사진첩</a>에서 로그인한 뒤 쓸 수 있습니다.</p>
       <ul class="comment-list"><li class="comment-empty">불러오는 중입니다.</li></ul>
     </div>
   </section>
