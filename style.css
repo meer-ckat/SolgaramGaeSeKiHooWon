@@ -624,13 +624,17 @@ button:focus-visible {
 }
 
 .admin-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   color: var(--muted);
   text-decoration: none;
   border: 1px solid var(--line);
   border-radius: 0.25rem;
-  padding: 0.2rem 0.6rem;
+  padding: 0 0.7rem;
 }
 
 .admin-link:hover {
@@ -697,7 +701,10 @@ button:focus-visible {
   border: 1px solid var(--line);
   box-shadow: none;
   font-size: 0.9rem;
-  padding: 0.5rem 1.2rem;
+
+  /* 손가락으로 누르는 것이라 최소 44px를 지킵니다. */
+  padding: 0.7rem 1.2rem;
+  min-height: 44px;
 }
 
 .cta-quiet:hover {
