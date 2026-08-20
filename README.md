@@ -15,13 +15,13 @@
 index.html              페이지
 style.css               스타일
 script.js               현황 로딩 + 계좌 복사 (CONFIG.ledgerEndpoint 설정 필요)
-assets/solgaram-logo.svg  학교 공식 로고 (직접 넣어야 함)
+assets/solgaram-logo.jpg  학교 공식 로고 (직접 넣어야 함)
 apps-script/Code.gs     Apps Script 소스 (시트에 붙여넣어 배포)
 ```
 
 ## 1. 학교 로고 넣기
 
-공식 로고 파일을 `assets/solgaram-logo.svg` 이름으로 넣습니다.
+공식 로고 파일을 `assets/solgaram-logo.jpg` 이름으로 넣습니다.
 파일이 없으면 페이지에 "솔가람고등학교" 텍스트가 대신 표시됩니다.
 비공식 사본을 임의로 내려받아 쓰지 마세요.
 
