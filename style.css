@@ -39,8 +39,9 @@ footer {
 }
 
 .logo {
-  height: 2rem;
+  height: 80px;
   width: auto;
+  object-fit: contain;
 }
 
 .logo-text {
