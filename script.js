@@ -174,6 +174,111 @@ lightbox.addEventListener("close", () => {
   document.getElementById("lightbox-img").removeAttribute("src");
 });
 
+// ============================================================
+// 댓글
+// ============================================================
+
+// 로그인이 없어 닉네임은 본인이 정합니다.
+// 같은 닉네임이 같은 사람이라는 보장은 없습니다.
+
+// 다시 그릴 때 입력 중인 글이 날아가지 않게, 바뀐 경우에만 그립니다.
+const lastCommentKey = {};
+
+function renderComments(all) {
+  document.querySelectorAll(".comments").forEach((box) => {
+    const board = box.dataset.board;
+    const items = Array.isArray(all[board]) ? all[board] : [];
+
+    const key = items.map((c) => c.id).join("|");
+    if (key === lastCommentKey[board]) return;
+    lastCommentKey[board] = key;
+
+    const list = box.querySelector(".comment-list");
+    list.textContent = "";
+
+    if (!items.length) {
+      const li = document.createElement("li");
+      li.className = "comment-empty";
+      li.textContent = "아직 댓글이 없습니다.";
+      list.appendChild(li);
+      return;
+    }
+
+    for (const item of items) {
+      const li = document.createElement("li");
+      li.className = "comment";
+
+      const nick = document.createElement("span");
+      nick.className = "comment-nickname";
+      nick.textContent = item.nickname;
+
+      const sep = document.createElement("span");
+      sep.className = "comment-sep";
+      sep.textContent = " - ";
+
+      const body = document.createElement("span");
+      body.textContent = item.body;
+
+      const at = document.createElement("time");
+      at.className = "comment-at";
+      at.textContent = item.at;
+
+      li.append(nick, sep, body, at);
+      list.appendChild(li);
+    }
+  });
+}
+
+async function submitComment(box) {
+  const board = box.dataset.board;
+  const nick = box.querySelector(".comment-nick");
+  const body = box.querySelector(".comment-body");
+  const note = box.querySelector(".comment-msg");
+
+  note.className = "form-msg comment-msg";
+  note.textContent = "등록 중입니다.";
+
+  try {
+    const res = await fetch(CONFIG.ledgerEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "addComment",
+        board: board,
+        nickname: nick.value,
+        body: body.value,
+      }),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      note.textContent = "";
+      body.value = "";
+      lastCommentKey[board] = null;
+      loadLedger();
+    } else if (data.error === "nick_blocked") {
+      note.className = "form-msg comment-msg form-msg-bad";
+      note.textContent = "관리자·운영자처럼 헷갈리는 닉네임은 쓸 수 없습니다.";
+    } else if (data.error === "too_many") {
+      note.className = "form-msg comment-msg form-msg-bad";
+      note.textContent = "댓글이 너무 빠르게 올라오고 있습니다. 잠시 후 다시 시도해 주세요.";
+    } else {
+      note.className = "form-msg comment-msg form-msg-bad";
+      note.textContent = "등록하지 못했습니다.";
+    }
+  } catch (err) {
+    note.className = "form-msg comment-msg form-msg-bad";
+    note.textContent = "서버에 연결하지 못했습니다.";
+  }
+}
+
+document.querySelectorAll(".comments").forEach((box) => {
+  box.querySelector(".comment-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    submitComment(box);
+  });
+});
+
 function showLoadError() {
   document.getElementById("load-status").hidden = false;
   document.getElementById("expenses-body").innerHTML =
@@ -198,6 +303,7 @@ async function loadLedger() {
     renderExpenses(Array.isArray(data.expenses) ? data.expenses : []);
     renderDonations(Array.isArray(data.donations) ? data.donations : []);
     renderGallery(Array.isArray(data.photos) ? data.photos : []);
+    renderComments(data.comments || {});
   } catch (err) {
     showLoadError();
   }
