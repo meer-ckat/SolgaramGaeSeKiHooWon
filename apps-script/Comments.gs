@@ -20,7 +20,7 @@ const COMMENT_LIMIT = 20;
 const COMMENT_WINDOW_SEC = 600;
 
 // 관리자인 척하는 닉네임 차단
-const NICK_BLOCKED = ["관리자", "운영자", "옥도단", "admin", "administrator", "운영진"];
+const NICK_BLOCKED = ["관리자", "운영자", "옥도단", "admin", "administrator", "운영진", "어드민", "에드민", "운영", "공지", "학교", "솔가람"];
 
 function addComment_(req) {
   const board = String(req.board || "");
