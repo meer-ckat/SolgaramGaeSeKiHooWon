@@ -114,11 +114,20 @@ function renderGallery(photos) {
     if (!/^https:\/\/(drive|lh3)\.google(usercontent)?\.com\//.test(photo.url || "")) continue;
 
     const li = document.createElement("li");
+
     const img = document.createElement("img");
     img.src = photo.url;
     img.alt = photo.caption || "옥희와 도치 사진";
     img.loading = "lazy";
-    li.appendChild(img);
+
+    // 격자에서는 잘려 보이므로, 누르면 원본 비율로 크게 띄웁니다.
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "gallery-item";
+    button.setAttribute("aria-label", (photo.caption || "사진") + " 크게 보기");
+    button.appendChild(img);
+    button.addEventListener("click", () => openLightbox(photo));
+    li.appendChild(button);
 
     if (photo.caption) {
       const cap = document.createElement("p");
@@ -130,6 +139,33 @@ function renderGallery(photos) {
     list.appendChild(li);
   }
 }
+
+function openLightbox(photo) {
+  const img = document.getElementById("lightbox-img");
+
+  // 격자용보다 큰 크기를 요청합니다.
+  img.src = photo.url.replace(/sz=w\d+/, "sz=w2000");
+  img.alt = photo.caption || "옥희와 도치 사진";
+
+  document.getElementById("lightbox-caption").textContent = photo.caption || "";
+  document.getElementById("lightbox").showModal();
+}
+
+const lightbox = document.getElementById("lightbox");
+
+// 사진 바깥(어두운 배경)을 누르면 닫습니다. Esc는 dialog가 알아서 처리합니다.
+lightbox.addEventListener("click", (event) => {
+  if (event.target === lightbox) lightbox.close();
+});
+
+document.getElementById("lightbox-close").addEventListener("click", () => {
+  lightbox.close();
+});
+
+// 닫을 때 이미지를 비워 메모리를 잡아두지 않게 합니다.
+lightbox.addEventListener("close", () => {
+  document.getElementById("lightbox-img").removeAttribute("src");
+});
 
 function showLoadError() {
   document.getElementById("load-status").hidden = false;
