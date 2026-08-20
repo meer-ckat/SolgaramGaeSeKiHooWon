@@ -87,8 +87,7 @@ function addEntry_(req) {
   const date = String(req.date || "").slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return json_({ ok: false, error: "bad_date" });
 
-  const sheet = sheetByName_(SHEET_NAME);
-  sheet.appendRow([
+  writeRow_(sheetByName_(SHEET_NAME), [
     date,
     type,
     type === "expense" ? -amount : amount,
@@ -98,6 +97,22 @@ function addEntry_(req) {
   ]);
 
   return json_({ ok: true });
+}
+
+// 시트 오른쪽에 안내문이 있으면 appendRow가 그 아래로 밀려납니다.
+// A열 기준으로 첫 빈 줄을 찾아 그 자리에 씁니다.
+function writeRow_(sheet, values) {
+  const colA = sheet.getRange("A1:A").getValues();
+  let row = colA.length + 1;
+
+  for (let i = 1; i < colA.length; i++) {
+    if (String(colA[i][0]).trim() === "") {
+      row = i + 1;
+      break;
+    }
+  }
+
+  sheet.getRange(row, 1, 1, values.length).setValues([values]);
 }
 
 function uploadPhoto_(req) {

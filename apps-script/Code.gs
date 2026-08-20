@@ -10,6 +10,19 @@
 //
 // 주의: D열(내용)에 후원자 이름 등 개인정보를 절대 쓰지 마세요.
 
+// 편집기에서 [실행]을 누르면 최초 설정이 실행됩니다.
+function 실행하면_최초설정() {
+  setupOkdodan();
+}
+
+// 잘못된 시도가 쌓여 관리자 로그인이 잠겼을 때,
+// 이 함수를 실행하면 즉시 풀립니다.
+function 잠금해제() {
+  CacheService.getScriptCache().remove("lockUntil");
+  CacheService.getScriptCache().remove("fail");
+  Logger.log("잠금이 해제되었습니다.");
+}
+
 const SHEET_ID = "1e5964jmcb_ZCQ4QlAgLr1oo56ARnlHGrn5amkAp1nP0";
 const SHEET_NAME = "ledger";
 const TIMEZONE = "Asia/Seoul";
