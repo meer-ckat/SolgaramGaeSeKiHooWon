@@ -701,6 +701,36 @@ button:focus-visible {
   font-size: 0.9rem;
 }
 
+/* 관리자 댓글 목록 */
+
+.admin-comments {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.admin-comment {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.admin-comment-board {
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+}
+
+.admin-comment .cta {
+  display: block;
+  margin-top: 0.4rem;
+}
+
 /* ========================================
    모바일
 ======================================== */

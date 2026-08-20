@@ -74,7 +74,15 @@ function hideComment_(req) {
 }
 
 function commentId_(row, index) {
-  return String(index) + "-" + String(row[0]);
+  return String(index) + "-" + commentAt_(row[0]);
+}
+
+// 시트가 "2026-08-20 21:54"를 날짜로 바꿔 버리므로 다시 문자열로 만듭니다.
+function commentAt_(value) {
+  if (value instanceof Date) {
+    return Utilities.formatDate(value, TIMEZONE, "MM-dd HH:mm");
+  }
+  return String(value || "");
 }
 
 function getComments_() {
@@ -94,7 +102,7 @@ function getComments_() {
 
     out[board].push({
       id: commentId_(row, i),
-      at: String(row[0] || ""),
+      at: commentAt_(row[0]),
       nickname: String(row[2] || ""),
       body: String(row[3] || ""),
     });

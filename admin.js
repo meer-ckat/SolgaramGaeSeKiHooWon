@@ -63,6 +63,7 @@ function showPanel() {
   el("panel").hidden = false;
   el("entry-date").value = new Date().toISOString().slice(0, 10);
   loadPhotos();
+  loadComments();
 }
 
 el("login-form").addEventListener("submit", async (event) => {
@@ -301,6 +302,99 @@ async function loadPhotos() {
     }
   } catch (err) {
     list.innerHTML = '<li class="gallery-empty">사진을 불러오지 못했습니다.</li>';
+  }
+}
+
+// ============================================================
+// 댓글 관리
+// ============================================================
+
+const BOARD_LABEL = {
+  expenses: "사용 내역",
+  donations: "후원 내역",
+  photos: "사진첩",
+};
+
+async function loadComments() {
+  const list = el("admin-comments");
+
+  try {
+    const res = await fetch(CONFIG.ledgerEndpoint);
+    const data = await res.json();
+    const all = data.comments || {};
+
+    // 세 게시판을 한 줄로 합치고 최신순으로 봅니다.
+    const items = [];
+    Object.keys(BOARD_LABEL).forEach((board) => {
+      (all[board] || []).forEach((c) => items.push(Object.assign({ board: board }, c)));
+    });
+    items.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+
+    list.textContent = "";
+
+    if (!items.length) {
+      const li = document.createElement("li");
+      li.className = "comment-empty";
+      li.textContent = "댓글이 없습니다.";
+      list.appendChild(li);
+      return;
+    }
+
+    for (const item of items) {
+      const li = document.createElement("li");
+      li.className = "admin-comment";
+
+      const where = document.createElement("span");
+      where.className = "admin-comment-board";
+      where.textContent = BOARD_LABEL[item.board];
+
+      const nick = document.createElement("span");
+      nick.className = "comment-nickname";
+      nick.textContent = item.nickname;
+
+      const sep = document.createElement("span");
+      sep.className = "comment-sep";
+      sep.textContent = " - ";
+
+      const body = document.createElement("span");
+      body.textContent = item.body;
+
+      const at = document.createElement("time");
+      at.className = "comment-at";
+      at.textContent = item.at;
+
+      const hide = document.createElement("button");
+      hide.type = "button";
+      hide.className = "cta cta-quiet";
+      hide.textContent = "내리기";
+      hide.addEventListener("click", () => hideComment(item, hide));
+
+      li.append(where, nick, sep, body, at, hide);
+      list.appendChild(li);
+    }
+  } catch (err) {
+    list.innerHTML = '<li class="comment-empty">댓글을 불러오지 못했습니다.</li>';
+  }
+}
+
+async function hideComment(item, button) {
+  const preview = item.nickname + " - " + item.body;
+  if (!window.confirm(preview + " — 이 댓글을 사이트에서 내릴까요?")) return;
+
+
+
+  button.disabled = true;
+  try {
+    const data = await callApi("hideComment", { id: item.id });
+    if (data.ok) {
+      loadComments();
+    } else {
+      button.disabled = false;
+      window.alert(errorText(data.error, data.retryAfter));
+    }
+  } catch (err) {
+    button.disabled = false;
+    window.alert("서버에 연결하지 못했습니다.");
   }
 }
 
