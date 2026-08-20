@@ -328,6 +328,38 @@ async function copyAccountNumber() {
 
 document.getElementById("copy-account").addEventListener("click", copyAccountNumber);
 
+// ============================================================
+// 공유하기
+// ============================================================
+
+// navigator.share는 브라우저 기본 기능입니다.
+// 모바일에서 누르면 카카오톡을 포함한 공유 목록이 뜹니다.
+// 지원하지 않는 브라우저(주로 데스크톱)에서는 주소를 복사합니다.
+async function share() {
+  const note = document.getElementById("share-msg");
+  const url = location.origin + location.pathname;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: "옥희 도치 후원",
+        text: "솔가람고등학교 옥희와 도치를 도와주세요.",
+        url: url,
+      });
+      return;
+    }
+
+    await navigator.clipboard.writeText(url);
+    note.textContent = "주소를 복사했습니다.";
+    clearTimeout(share.timer);
+    share.timer = setTimeout(() => { note.textContent = ""; }, 3000);
+  } catch (err) {
+    // 사용자가 공유창을 닫은 경우도 여기로 옵니다. 조용히 넘어갑니다.
+  }
+}
+
+document.getElementById("share").addEventListener("click", share);
+
 loadLedger();
 
 // ============================================================

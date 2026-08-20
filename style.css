@@ -163,6 +163,20 @@ h2 {
   transform: translateY(0);
 }
 
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.share-msg {
+  font-size: 0.9rem;
+  color: var(--marigold);
+  margin: 0.6rem 0 0;
+  min-height: 1.4em;
+}
+
 /* ========================================
    후원 현황
 ======================================== */
@@ -754,5 +768,13 @@ button:focus-visible {
     width: 100%;
 
     text-align: center;
+  }
+
+  .hero-actions {
+    display: block;
+  }
+
+  .hero-actions .cta {
+    margin-bottom: 0.6rem;
   }
 }

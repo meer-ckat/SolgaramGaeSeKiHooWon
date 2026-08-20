@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>옥희 도치 후원</title>
   <meta name="description" content="솔가람고등학교의 회색늑대의 아종이자 학명은 Canis lupus familiaris인 옥희와 도치를 위한 옥도단 운영 후원 페이지">
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -27,7 +27,11 @@
       후원금은 솔가람고등학교에서 지내는 옥희와 도치의
       사료, 간식, 병원비, 생활용품에 사용됩니다.
     </p>
-    <a href="#donate" class="cta">후원하기</a>
+    <div class="hero-actions">
+      <a href="#donate" class="cta">후원하기</a>
+      <button type="button" id="share" class="cta cta-quiet">공유하기</button>
+    </div>
+    <p class="share-msg" id="share-msg" role="status" aria-live="polite"></p>
   </section>
 
   <section aria-labelledby="status-title">
@@ -44,6 +48,28 @@
       <div><dt>잔액</dt><dd id="balance">—</dd></div>
     </dl>
     <p class="note" id="load-status" role="status" hidden>후원 현황을 불러오지 못했습니다.</p>
+  </section>
+
+  <section aria-labelledby="gallery-title">
+    <h2 id="gallery-title">사진첩</h2>
+    <ul class="gallery" id="gallery">
+      <li class="gallery-empty">사진을 불러오는 중입니다.</li>
+    </ul>
+
+    <div class="comments" data-board="photos">
+      <h3 class="comments-title">사진첩 댓글</h3>
+      <form class="comment-form">
+        <label class="visually-hidden" for="nick-photos">닉네임</label>
+        <input type="text" id="nick-photos" class="comment-nick" maxlength="20"
+               placeholder="닉네임" autocomplete="off" required>
+        <label class="visually-hidden" for="body-photos">댓글</label>
+        <input type="text" id="body-photos" class="comment-body" maxlength="200"
+               placeholder="댓글을 남겨 주세요" autocomplete="off" required>
+        <button type="submit" class="cta cta-quiet">등록</button>
+        <p class="form-msg comment-msg" role="status" aria-live="polite"></p>
+      </form>
+      <ul class="comment-list"><li class="comment-empty">불러오는 중입니다.</li></ul>
+    </div>
   </section>
 
   <section aria-labelledby="about-title">
@@ -136,27 +162,6 @@
     </div>
   </section>
 
-  <section aria-labelledby="gallery-title">
-    <h2 id="gallery-title">사진첩</h2>
-    <ul class="gallery" id="gallery">
-      <li class="gallery-empty">사진을 불러오는 중입니다.</li>
-    </ul>
-
-    <div class="comments" data-board="photos">
-      <h3 class="comments-title">사진첩 댓글</h3>
-      <form class="comment-form">
-        <label class="visually-hidden" for="nick-photos">닉네임</label>
-        <input type="text" id="nick-photos" class="comment-nick" maxlength="20"
-               placeholder="닉네임" autocomplete="off" required>
-        <label class="visually-hidden" for="body-photos">댓글</label>
-        <input type="text" id="body-photos" class="comment-body" maxlength="200"
-               placeholder="댓글을 남겨 주세요" autocomplete="off" required>
-        <button type="submit" class="cta cta-quiet">등록</button>
-        <p class="form-msg comment-msg" role="status" aria-live="polite"></p>
-      </form>
-      <ul class="comment-list"><li class="comment-empty">불러오는 중입니다.</li></ul>
-    </div>
-  </section>
 </main>
 
 <dialog id="lightbox" class="lightbox" aria-label="사진 크게 보기">
@@ -173,6 +178,6 @@
   <p>문의: <a href="mailto:sunsetbaby@naver.com">sunsetbaby@naver.com</a></p>
 </footer>
 
-<script src="script.js?v=6"></script>
+<script src="script.js?v=7"></script>
 </body>
 </html>
