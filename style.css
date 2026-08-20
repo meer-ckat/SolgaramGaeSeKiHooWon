@@ -311,6 +311,20 @@ h2 {
   color: var(--marigold);
 }
 
+.stop-notice {
+  padding: 1rem;
+  margin: 0 0 1.5rem;
+  border: 1px solid var(--marigold);
+  border-radius: 0.25rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.stop-notice strong {
+  color: var(--marigold);
+}
+
 /* ========================================
    사용 내역
 ======================================== */

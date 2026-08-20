@@ -11,6 +11,18 @@ function won(n) {
   return KRW.format(n) + "원";
 }
 
+// 기부금품법은 연간 1천만 원 이상 모집 시 등록을 요구합니다.
+// 학생이 운영하는 모금이라 그 절반에서 스스로 멈춥니다.
+const DONATION_STOP = 5000000;
+
+function applyDonationCap(yearReceived) {
+  const over = Number(yearReceived) >= DONATION_STOP;
+
+  document.getElementById("donate-stop").hidden = !over;
+  document.getElementById("account-box").hidden = over;
+  document.getElementById("copy-account").hidden = over;
+}
+
 function renderSummary(data) {
   const goal = Number(data.goal) || 0;
   const received = Number(data.received) || 0;
@@ -407,6 +419,7 @@ async function loadLedger() {
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
     renderSummary(data);
+    applyDonationCap(data.yearReceived);
     renderExpenses(Array.isArray(data.expenses) ? data.expenses : []);
     renderDonations(Array.isArray(data.donations) ? data.donations : []);
     renderGallery(Array.isArray(data.photos) ? data.photos : []);

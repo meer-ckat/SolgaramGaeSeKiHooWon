@@ -117,6 +117,9 @@ function doGet() {
 
     // 아래 둘은 Admin.gs 에 있습니다
     donations: getDonations_(),
+
+    // 기부금품법 상한 안전장치용 (올해 누적 후원금)
+    yearReceived: getYearReceived_(),
     photos: getPhotos_(),
 
     updatedAt: Utilities.formatDate(

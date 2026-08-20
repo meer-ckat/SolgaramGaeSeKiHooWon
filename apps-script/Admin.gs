@@ -191,6 +191,31 @@ function getDonations_() {
   return out;
 }
 
+// 올해 들어온 후원금 총액입니다.
+// 기부금품법은 1천만 원 이상 모집 시 등록을 요구하므로,
+// 그 절반인 500만 원에서 사이트가 스스로 모금을 멈춥니다.
+function getYearReceived_() {
+  const sheet = sheetByName_(SHEET_NAME);
+  const rows = sheet.getDataRange().getValues();
+  const year = new Date().getFullYear();
+
+  let total = 0;
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (String(row[1] || "").trim().toLowerCase() !== "donation") continue;
+
+    const date = parseDate_(row[0]);
+    const amount = Number(row[2]);
+    if (!date || !Number.isFinite(amount) || amount === 0) continue;
+    if (date.getFullYear() !== year) continue;
+
+    total += Math.abs(amount);
+  }
+
+  return total;
+}
+
 function getPhotos_() {
   const sheet = ss_().getSheetByName(PHOTO_SHEET);
   if (!sheet) return [];

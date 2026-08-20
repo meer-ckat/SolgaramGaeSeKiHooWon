@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>옥희 도치 후원</title>
   <meta name="description" content="솔가람고등학교의 회색늑대의 아종이자 학명은 Canis lupus familiaris인 옥희와 도치를 위한 옥도단 운영 후원 페이지">
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -58,6 +58,12 @@
     </ul>
 
     <div id="login-bar" class="login-bar">
+      <p class="note">
+        댓글을 쓰려면 구글 로그인이 필요합니다. 이메일 주소를 받아 두지만
+        화면에는 닉네임만 보이며, 부적절한 댓글 작성자를 차단하는 용도로만 씁니다.
+        자세한 내용은 <a href="privacy.html">개인정보 처리방침</a>을 봐 주세요.
+        만 14세 미만은 댓글을 쓸 수 없습니다.
+      </p>
       <div id="google-btn"></div>
       <p id="login-state" class="login-state" role="status" aria-live="polite"></p>
       <label class="login-nick">
@@ -92,7 +98,16 @@
 
   <section id="donate" aria-labelledby="donate-title">
     <h2 id="donate-title">후원하기</h2>
-    <dl class="account">
+    <p class="stop-notice" id="donate-stop" hidden>
+      <strong>지금은 후원을 받지 않습니다.</strong><br>
+      올해 모인 후원금이 저희가 정한 한도에 이르러 계좌 안내를 내렸습니다.
+      「기부금품의 모집 및 사용에 관한 법률」은 연간 1천만 원 이상을 모집할 때
+      등록을 요구하는데, 저희는 학생이 운영하는 작은 모금이라 그 절반인
+      500만 원에서 스스로 멈추기로 했습니다.
+      마음만 감사히 받겠습니다.
+    </p>
+
+    <dl class="account" id="account-box">
       <div><dt>은행</dt><dd>토스뱅크</dd></div>
       <div><dt>계좌번호</dt><dd id="account-number">1908-4060-9427</dd></div>
       <div><dt>예금주</dt><dd>한동혁</dd></div>
@@ -181,8 +196,13 @@
     학교 공식 페이지가 아닙니다.
   </p>
   <p>문의: <a href="mailto:sunsetbaby@naver.com">sunsetbaby@naver.com</a></p>
+  <p><a href="privacy.html">개인정보 처리방침</a></p>
+  <p>
+    욕설·비방·개인정보가 담긴 댓글은 예고 없이 삭제되며,
+    반복되면 댓글 작성이 제한됩니다.
+  </p>
 </footer>
 
-<script src="script.js?v=9"></script>
+<script src="script.js?v=10"></script>
 </body>
 </html>
