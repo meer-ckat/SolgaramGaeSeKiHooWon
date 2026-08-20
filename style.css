@@ -1,21 +1,36 @@
-/* 옥도단 후원 — 모바일 우선, 시스템 폰트, 문서형 레이아웃 */
+/* 옥도단 후원 — Marigold × Obsidian
+   모바일 우선, 시스템 폰트, 문서형 레이아웃
+*/
 
 :root {
-  --text: #191919;
-  --muted: #666;
-  --line: #ddd;
-  --bar-bg: #e8e8e8;
+  /* 기본 색상 */
+  --text: #F2F0EB;
+  --muted: #A7A39B;
+  --line: #302E2A;
+  --bar-bg: #292723;
+
+  /* 테마 색상 */
+  --marigold: #F6BD60;
+  --marigold-hover: #FFD27A;
+  --obsidian: #0B0B0B;
+
+  /* 그림자 */
+  --shadow: rgba(11, 11, 11, 0.65);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
   color: var(--text);
-  background: #000;
+  background: var(--obsidian);
   line-height: 1.65;
 }
 
@@ -27,24 +42,31 @@ footer {
   padding: 0 1.25rem;
 }
 
-/* 헤더 */
+/* ========================================
+   헤더
+======================================== */
+
 .site-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+
   padding-top: 1rem;
   padding-bottom: 1rem;
+
   border-bottom: 1px solid var(--line);
 }
 
 .logo {
-    height: 6rem;
-    width: auto;
+  height: 6rem;
+  width: auto;
+  object-fit: contain;
 }
 
 .logo-text {
   font-weight: 700;
+  color: var(--text);
 }
 
 .header-note {
@@ -52,7 +74,10 @@ footer {
   color: var(--muted);
 }
 
-/* 공통 */
+/* ========================================
+   공통
+======================================== */
+
 section {
   margin: 3.5rem 0;
 }
@@ -76,16 +101,19 @@ h2 {
   margin: 0.75rem 0 0;
 }
 
-/* 히어로 */
+/* ========================================
+   히어로
+======================================== */
+
 .hero {
   margin-top: 3rem;
 }
 
 .subtitle {
-    font-size: 1.1rem;
-    color: #ff7400;
-    margin: 0.25rem 0 1.25rem;
-    font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--marigold);
+  margin: 0.25rem 0 1.25rem;
+  font-weight: bold;
 }
 
 .intro {
@@ -93,60 +121,109 @@ h2 {
   max-width: 34em;
 }
 
+/* ========================================
+   버튼
+======================================== */
+
 .cta {
-    display: inline-block;
-    background: #FF8D00;
-    color: #fff;
-    font-size: 1.05rem;
-    font-weight: 700;
-    font-family: inherit;
-    padding: 0.85rem 2.5rem;
-    border: none;
-    text-decoration: none;
-    cursor: pointer;
+  display: inline-block;
+
+  background: var(--marigold);
+  color: var(--obsidian);
+
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: inherit;
+
+  padding: 0.85rem 2.5rem;
+
+  border: none;
+  border-radius: 0.25rem;
+
+  text-decoration: none;
+  cursor: pointer;
+
+  box-shadow: 0 4px 12px var(--shadow);
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .cta:hover {
-  background: #000;
+  background: var(--marigold-hover);
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 6px 16px var(--shadow);
 }
 
-/* 후원 현황 */
+.cta:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   후원 현황
+======================================== */
+
 .big-amount {
   font-size: clamp(2.6rem, 9vw, 4rem);
+
   font-weight: 700;
+
   letter-spacing: -0.02em;
+
   margin: 0 0 1rem;
+
   line-height: 1.15;
+
+  color: var(--text);
 }
 
 .bar {
   height: 6px;
+
   background: var(--bar-bg);
+
+  overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
+
   width: 0;
-  background: var(--text);
+
+  background: var(--marigold);
+
+  transition: width 0.4s ease;
 }
 
 .percent {
   font-size: 0.9rem;
+
   color: var(--muted);
+
   margin: 0.5rem 0 1.5rem;
 }
 
 .figures {
   margin: 0;
+
   display: grid;
+
   gap: 0.4rem;
 }
 
 .figures div {
   display: flex;
+
   justify-content: space-between;
+
   border-bottom: 1px solid var(--line);
+
   padding-bottom: 0.4rem;
+
   max-width: 22em;
 }
 
@@ -156,120 +233,205 @@ h2 {
 
 .figures dd {
   margin: 0;
+
   font-weight: 700;
+
   font-variant-numeric: tabular-nums;
+
+  color: var(--text);
 }
 
-/* 후원하기 */
+/* ========================================
+   후원하기
+======================================== */
+
 .account {
   margin: 0 0 1.5rem;
+
   display: grid;
+
   gap: 0.4rem;
 }
 
 .account div {
   display: flex;
+
   justify-content: space-between;
+
   border-bottom: 1px solid var(--line);
+
   padding-bottom: 0.4rem;
+
   max-width: 22em;
 }
 
 .account dt {
   color: var(--muted);
+
   flex-shrink: 0;
+
   margin-right: 1rem;
 }
 
 .account dd {
   margin: 0;
+
   font-weight: 700;
+
   font-variant-numeric: tabular-nums;
+
   word-break: break-all;
+
   text-align: right;
+
+  color: var(--text);
 }
 
 .copy-feedback {
   font-size: 0.9rem;
+
   margin: 0.6rem 0 0;
+
   min-height: 1.5em;
+
+  color: var(--marigold);
 }
 
-/* 사용 내역 */
+/* ========================================
+   사용 내역
+======================================== */
+
 .expenses {
   width: 100%;
+
   border-collapse: collapse;
+
   font-variant-numeric: tabular-nums;
 }
 
 .expenses th,
 .expenses td {
   text-align: left;
+
   padding: 0.5rem 0.4rem;
+
   border-bottom: 1px solid var(--line);
 }
 
 .expenses th {
   font-size: 0.85rem;
+
   color: var(--muted);
+
   font-weight: 400;
+}
+
+.expenses td {
+  color: var(--text);
 }
 
 .expenses .num {
   text-align: right;
+
   white-space: nowrap;
 }
 
 .expenses .empty {
   color: var(--muted);
+
   text-align: center;
 }
 
-/* 푸터 */
+/* ========================================
+   푸터
+======================================== */
+
 footer {
   border-top: 1px solid var(--line);
+
   margin-top: 4rem;
+
   padding-top: 1.25rem;
   padding-bottom: 2.5rem;
+
   font-size: 0.9rem;
+
   color: var(--muted);
 }
 
 footer a {
-  color: inherit;
+  color: var(--marigold);
+
+  text-decoration: none;
 }
 
-/* 접근성 */
+footer a:hover {
+  color: var(--marigold-hover);
+
+  text-decoration: underline;
+}
+
+/* ========================================
+   접근성
+======================================== */
+
 .visually-hidden {
   position: absolute;
+
   width: 1px;
   height: 1px;
+
   overflow: hidden;
+
   clip: rect(0 0 0 0);
+
   white-space: nowrap;
 }
 
 a:focus-visible,
 button:focus-visible {
-  outline: 3px solid var(--text);
+  outline: 3px solid var(--marigold);
+
   outline-offset: 2px;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/* ========================================
+   모션 감소 설정
+======================================== */
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+
+  .cta,
+  .bar-fill {
+    transition: none;
+  }
 }
 
-/* 모바일: CTA 전체 폭 */
+/* ========================================
+   모바일
+======================================== */
+
 @media (max-width: 480px) {
+  .site-header {
+    gap: 0.75rem;
+  }
+
+  .logo {
+    height: 4.5rem;
+  }
+
+  .header-note {
+    font-size: 0.75rem;
+  }
+
   .cta {
     display: block;
+
     width: 100%;
+
     text-align: center;
   }
 }
