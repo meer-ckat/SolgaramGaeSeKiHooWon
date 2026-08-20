@@ -210,7 +210,8 @@ h2 {
 
   background: var(--marigold);
 
-  transition: width 0.4s ease;
+  /* 0에서 실제 값까지 차오릅니다. */
+  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .percent {
@@ -424,7 +425,65 @@ button:focus-visible {
 }
 
 /* ========================================
+   움직임
+   ----------------------------------------
+   불러온 내용이 툭 튀어나오지 않게 하는 용도입니다.
+   장식용 움직임은 넣지 않습니다.
+======================================== */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 사진과 댓글은 나중에 불러와 채워지므로 부드럽게 나타나게 합니다. */
+.gallery li,
+.comment {
+  animation: fade-up 0.35s ease both;
+}
+
+/* 사진은 앞의 몇 장만 시차를 둡니다. 너무 길면 기다리는 느낌이 납니다. */
+.gallery li:nth-child(2) { animation-delay: 0.04s; }
+.gallery li:nth-child(3) { animation-delay: 0.08s; }
+.gallery li:nth-child(4) { animation-delay: 0.12s; }
+.gallery li:nth-child(5) { animation-delay: 0.16s; }
+.gallery li:nth-child(6) { animation-delay: 0.20s; }
+
+/* 크게 보기가 갑자기 튀어나오지 않게 합니다. */
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lightbox[open] {
+  animation: lightbox-in 0.2s ease;
+}
+
+.lightbox[open]::backdrop {
+  animation: backdrop-in 0.2s ease;
+}
+
+/* ========================================
    모션 감소 설정
+   ----------------------------------------
+   기기에서 "동작 줄이기"를 켠 사람에게는 전부 끕니다.
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
@@ -435,6 +494,17 @@ button:focus-visible {
   .cta,
   .bar-fill {
     transition: none;
+  }
+
+  .gallery li,
+  .comment,
+  .lightbox[open],
+  .lightbox[open]::backdrop {
+    animation: none;
+  }
+
+  .cta:hover {
+    transform: none;
   }
 }
 
