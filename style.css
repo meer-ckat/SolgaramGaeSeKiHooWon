@@ -411,6 +411,133 @@ button:focus-visible {
 }
 
 /* ========================================
+   사진첩
+======================================== */
+
+.gallery {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.gallery img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  border-radius: 0.25rem;
+  background: var(--bar-bg);
+}
+
+.gallery-caption {
+  margin: 0.4rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.gallery-empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ========================================
+   관리자
+======================================== */
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-link {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.6rem;
+}
+
+.admin-link:hover {
+  color: var(--marigold);
+  border-color: var(--marigold);
+}
+
+.field {
+  display: block;
+  margin: 0 0 1rem;
+  max-width: 26em;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.6rem;
+  color: var(--text);
+  background: var(--bar-bg);
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+}
+
+.field input:focus-visible,
+.field select:focus-visible {
+  outline: 3px solid var(--marigold);
+  outline-offset: 2px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+}
+
+.form-msg {
+  font-size: 0.9rem;
+  margin: 0.75rem 0 0;
+  min-height: 1.5em;
+  color: var(--muted);
+}
+
+.form-msg-good {
+  color: var(--marigold);
+}
+
+.form-msg-bad {
+  color: #FF8A7A;
+}
+
+.cta-quiet {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  box-shadow: none;
+  font-size: 0.9rem;
+  padding: 0.5rem 1.2rem;
+}
+
+.cta-quiet:hover {
+  background: transparent;
+  color: var(--marigold);
+  border-color: var(--marigold);
+  box-shadow: none;
+}
+
+/* ========================================
    모바일
 ======================================== */
 

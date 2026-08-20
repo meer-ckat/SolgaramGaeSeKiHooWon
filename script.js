@@ -68,10 +68,77 @@ function renderExpenses(expenses) {
   }
 }
 
+function renderDonations(donations) {
+  const body = document.getElementById("donations-body");
+  body.textContent = "";
+
+  if (!donations.length) {
+    body.innerHTML = '<tr><td colspan="3" class="empty">아직 공개된 후원 내역이 없습니다.</td></tr>';
+    return;
+  }
+
+  const sorted = donations.slice().sort((a, b) => String(b.date).localeCompare(String(a.date)));
+
+  for (const item of sorted) {
+    const tr = document.createElement("tr");
+
+    const date = document.createElement("td");
+    date.textContent = String(item.date).slice(5).replace("-", ".");
+
+    const name = document.createElement("td");
+    name.textContent = item.name || "익명";
+
+    const amount = document.createElement("td");
+    amount.className = "num";
+    amount.textContent = won(Number(item.amount) || 0);
+
+    tr.append(date, name, amount);
+    body.appendChild(tr);
+  }
+}
+
+function renderGallery(photos) {
+  const list = document.getElementById("gallery");
+  list.textContent = "";
+
+  if (!photos.length) {
+    const li = document.createElement("li");
+    li.className = "gallery-empty";
+    li.textContent = "아직 등록된 사진이 없습니다.";
+    list.appendChild(li);
+    return;
+  }
+
+  for (const photo of photos) {
+    // 구글 드라이브 이미지 주소만 허용 (스크립트 URL 차단)
+    if (!/^https:\/\/(drive|lh3)\.google(usercontent)?\.com\//.test(photo.url || "")) continue;
+
+    const li = document.createElement("li");
+    const img = document.createElement("img");
+    img.src = photo.url;
+    img.alt = photo.caption || "옥희와 도치 사진";
+    img.loading = "lazy";
+    li.appendChild(img);
+
+    if (photo.caption) {
+      const cap = document.createElement("p");
+      cap.className = "gallery-caption";
+      cap.textContent = photo.caption;
+      li.appendChild(cap);
+    }
+
+    list.appendChild(li);
+  }
+}
+
 function showLoadError() {
   document.getElementById("load-status").hidden = false;
   document.getElementById("expenses-body").innerHTML =
     '<tr><td colspan="3" class="empty">내역을 불러오지 못했습니다.</td></tr>';
+  document.getElementById("donations-body").innerHTML =
+    '<tr><td colspan="3" class="empty">내역을 불러오지 못했습니다.</td></tr>';
+  document.getElementById("gallery").innerHTML =
+    '<li class="gallery-empty">사진을 불러오지 못했습니다.</li>';
 }
 
 async function loadLedger() {
@@ -85,6 +152,8 @@ async function loadLedger() {
     const data = await res.json();
     renderSummary(data);
     renderExpenses(Array.isArray(data.expenses) ? data.expenses : []);
+    renderDonations(Array.isArray(data.donations) ? data.donations : []);
+    renderGallery(Array.isArray(data.photos) ? data.photos : []);
   } catch (err) {
     showLoadError();
   }

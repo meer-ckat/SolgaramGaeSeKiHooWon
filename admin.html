@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>관리자 · 옥도단 후원</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="admin-link">← 후원 페이지</a>
+  <span class="header-note">관리자</span>
+</header>
+
+<main>
+
+  <section id="gate" aria-labelledby="gate-title">
+    <h1 id="gate-title">AdminToken을 입력하시오</h1>
+    <form id="login-form" autocomplete="off">
+      <label class="field">
+        <span class="field-label">AdminToken</span>
+        <input type="password" id="token-input" name="token"
+               autocomplete="off" autocapitalize="off" autocorrect="off"
+               spellcheck="false" maxlength="64" required>
+      </label>
+      <button type="submit" class="cta">확인</button>
+      <p class="form-msg" id="login-msg" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <div id="panel" hidden>
+
+    <section aria-labelledby="entry-title">
+      <h2 id="entry-title">장부 기록 추가</h2>
+      <form id="entry-form" autocomplete="off">
+        <label class="field">
+          <span class="field-label">날짜</span>
+          <input type="date" id="entry-date" required>
+        </label>
+        <label class="field">
+          <span class="field-label">구분</span>
+          <select id="entry-type">
+            <option value="donation">후원 (들어온 돈)</option>
+            <option value="expense">지출 (나간 돈)</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="field-label">금액 (원)</span>
+          <input type="number" id="entry-amount" min="1" step="1" required>
+        </label>
+        <label class="field">
+          <span class="field-label">내용</span>
+          <input type="text" id="entry-desc" maxlength="100"
+                 placeholder="예) 사료 20kg">
+        </label>
+        <label class="field">
+          <span class="field-label">표시명 (후원일 때만, 비우면 익명)</span>
+          <input type="text" id="entry-name" maxlength="20" placeholder="익명">
+        </label>
+        <label class="check">
+          <input type="checkbox" id="entry-public">
+          <span>사이트에 공개</span>
+        </label>
+        <button type="submit" class="cta">기록 추가</button>
+        <p class="form-msg" id="entry-msg" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section aria-labelledby="upload-title">
+      <h2 id="upload-title">사진 올리기</h2>
+      <form id="upload-form" autocomplete="off">
+        <label class="field">
+          <span class="field-label">사진 파일</span>
+          <input type="file" id="photo-file" accept="image/jpeg,image/png,image/webp" required>
+        </label>
+        <label class="field">
+          <span class="field-label">설명 (선택)</span>
+          <input type="text" id="photo-caption" maxlength="60" placeholder="예) 운동장의 옥희">
+        </label>
+        <button type="submit" class="cta">올리기</button>
+        <p class="form-msg" id="upload-msg" role="status" aria-live="polite"></p>
+        <p class="note">
+          업로드 전에 브라우저에서 사진을 축소하며, 이 과정에서 촬영 위치(GPS) 정보가 제거됩니다.
+        </p>
+      </form>
+    </section>
+
+    <section aria-labelledby="manage-title">
+      <h2 id="manage-title">올린 사진 관리</h2>
+      <ul class="gallery" id="admin-gallery">
+        <li class="gallery-empty">불러오는 중입니다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <button type="button" id="logout" class="cta cta-quiet">로그아웃</button>
+    </section>
+
+  </div>
+
+</main>
+
+<script src="admin.js"></script>
+</body>
+</html>

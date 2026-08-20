@@ -13,7 +13,10 @@
   <img src="assets/solgaram-logo.jpg" alt="솔가람고등학교 로고" class="logo"
        onerror="this.hidden=true;this.nextElementSibling.hidden=false">
   <span class="logo-text" hidden>솔가람고등학교</span>
-  <span class="header-note">학생 운영 후원 페이지</span>
+  <span class="header-right">
+    <span class="header-note">학생 운영 후원 페이지</span>
+    <a href="admin.html" class="admin-link">ADMIN</a>
+  </span>
 </header>
 
 <main>
@@ -83,6 +86,31 @@
         <tr><td colspan="3" class="empty">내역을 불러오는 중입니다.</td></tr>
       </tbody>
     </table>
+  </section>
+
+  <section aria-labelledby="donations-title">
+    <h2 id="donations-title">후원 내역</h2>
+    <p class="note">후원자 이름은 공개하지 않습니다. 표시명은 후원자가 원한 경우에만 표시됩니다.</p>
+    <table class="expenses">
+      <caption class="visually-hidden">공개된 후원 내역</caption>
+      <thead>
+        <tr>
+          <th scope="col">날짜</th>
+          <th scope="col">표시명</th>
+          <th scope="col" class="num">금액</th>
+        </tr>
+      </thead>
+      <tbody id="donations-body">
+        <tr><td colspan="3" class="empty">내역을 불러오는 중입니다.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="gallery-title">
+    <h2 id="gallery-title">사진첩</h2>
+    <ul class="gallery" id="gallery">
+      <li class="gallery-empty">사진을 불러오는 중입니다.</li>
+    </ul>
   </section>
 </main>
 
