@@ -6,6 +6,7 @@
 // 이메일이 있어야 차단(밴)이 실제로 작동합니다.
 
 const COMMENT_SHEET = "comments";
+const COMMENT_TRASH = "comments_삭제";
 const BANNED_SHEET = "banned";
 const BOARDS = ["expenses", "donations", "photos"];
 
@@ -104,12 +105,14 @@ function addComment_(req) {
     safeCell_(body),
     true,
     safeCell_(email),
+    String(Date.now()),
   ]);
 
   return json_({ ok: true });
 }
 
-// 관리자만: 댓글을 내립니다. req.ban 이 true 면 작성자까지 차단합니다.
+// 관리자만: 댓글을 휴지통 시트로 옮기고 원본에서 지웁니다.
+// req.ban 이 true 면 작성자까지 차단합니다.
 function hideComment_(req) {
   const id = String(req.id || "");
   const sheet = sheetByName_(COMMENT_SHEET);
@@ -118,10 +121,11 @@ function hideComment_(req) {
   for (let i = 1; i < rows.length; i++) {
     if (commentId_(rows[i], i) !== id) continue;
 
-    sheet.getRange(i + 1, 5).setValue(false);
+    const email = String(rows[i][5] || "").trim().toLowerCase();
+
+    moveToTrash_(sheet, COMMENT_TRASH, i + 1, rows[i]);
 
     if (req.ban === true) {
-      const email = String(rows[i][5] || "").trim().toLowerCase();
       if (!email) return json_({ ok: true, banned: false });
 
       const banned = ss_().getSheetByName(BANNED_SHEET);
@@ -140,7 +144,27 @@ function hideComment_(req) {
   return json_({ ok: false, error: "not_found" });
 }
 
+// 지운 내용을 휴지통 시트에 옮겨 둡니다.
+// 원본 시트는 깨끗해지고, 필요하면 되살릴 수 있습니다.
+function moveToTrash_(sheet, trashName, rowNumber, values) {
+  const ss = ss_();
+  let trash = ss.getSheetByName(trashName);
+
+  if (!trash) {
+    trash = ss.insertSheet(trashName);
+    trash.appendRow(["삭제 시각"].concat(sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]));
+  }
+
+  trash.appendRow(
+    [Utilities.formatDate(new Date(), TIMEZONE, "yyyy-MM-dd HH:mm")].concat(values)
+  );
+
+  sheet.deleteRow(rowNumber);
+}
+
 function commentId_(row, index) {
+  const id = String(row[6] || "").trim();
+  if (id) return id;
   return String(index) + "-" + commentAt_(row[0]);
 }
 
@@ -190,11 +214,11 @@ function 댓글시트_만들기() {
   const comments = ss.getSheetByName(COMMENT_SHEET);
   if (!comments) {
     ss.insertSheet(COMMENT_SHEET)
-      .appendRow(["시각", "게시판", "닉네임", "내용", "공개", "이메일(비공개)"]);
+      .appendRow(["시각", "게시판", "닉네임", "내용", "공개", "이메일(비공개)", "id"]);
     Logger.log("comments 시트를 만들었습니다.");
-  } else if (!comments.getRange("F1").getValue()) {
-    comments.getRange("F1").setValue("이메일(비공개)");
-    Logger.log("comments 시트에 이메일 열을 추가했습니다.");
+  } else {
+    if (!comments.getRange("F1").getValue()) comments.getRange("F1").setValue("이메일(비공개)");
+    if (!comments.getRange("G1").getValue()) comments.getRange("G1").setValue("id");
   }
 
   if (!ss.getSheetByName(BANNED_SHEET)) {

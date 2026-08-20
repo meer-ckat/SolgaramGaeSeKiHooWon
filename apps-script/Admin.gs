@@ -10,6 +10,7 @@
 // 프로젝트 설정 → 스크립트 속성에 ADMIN_TOKEN 으로 저장하세요.
 
 const PHOTO_SHEET = "photos";
+const PHOTO_TRASH = "photos_삭제";
 const LOG_SHEET = "security_log";
 
 // 토큰 허용 형식: 영숫자와 - _ 만, 32~64자.
@@ -139,31 +140,28 @@ function uploadPhoto_(req) {
   return json_({ ok: true, id: id });
 }
 
-// 시트 행과 드라이브 파일을 지우지 않고 공개만 끕니다(휴지통 이동).
-// 실수로 내려도 복구할 수 있습니다.
+// 사진을 photos_삭제 시트로 옮기고 원본에서 지웁니다.
+// 드라이브 파일은 휴지통으로 보내므로 30일 안에는 되살릴 수 있습니다.
 function deletePhoto_(req) {
   const id = String(req.id || "");
   const sheet = sheetByName_(PHOTO_SHEET);
   const rows = sheet.getDataRange().getValues();
 
   for (let i = 1; i < rows.length; i++) {
-    if (String(rows[i][0]) === id) {
-      sheet.getRange(i + 1, 5).setValue(false);
-      try {
-        DriveApp.getFileById(String(rows[i][1])).setTrashed(true);
-      } catch (err) {
-        // 파일이 이미 없어도 공개는 꺼진 상태로 둡니다.
-      }
-      return json_({ ok: true });
+    if (String(rows[i][0]) !== id) continue;
+
+    try {
+      DriveApp.getFileById(String(rows[i][1])).setTrashed(true);
+    } catch (err) {
+      // 파일이 이미 없어도 시트 정리는 진행합니다.
     }
+
+    moveToTrash_(sheet, PHOTO_TRASH, i + 1, rows[i]);
+    return json_({ ok: true });
   }
 
   return json_({ ok: false, error: "not_found" });
 }
-
-// ============================================================
-// 공개 데이터 (Code.gs의 doGet에서 부릅니다)
-// ============================================================
 
 // 후원 내역: 날짜·표시명·금액만 내보냅니다.
 // 시트의 '내용'(D열)은 후원자 정보가 적혀 있을 수 있어 절대 내보내지 않습니다.
