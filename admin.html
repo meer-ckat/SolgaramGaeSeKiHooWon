@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>관리자 · 옥도단 후원</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
@@ -72,14 +72,14 @@
       <h2 id="upload-title">사진 올리기</h2>
       <form id="upload-form" autocomplete="off">
         <label class="field">
-          <span class="field-label">사진 파일</span>
-          <input type="file" id="photo-file" accept="image/jpeg,image/png,image/webp" required>
+          <span class="field-label">사진 파일 (여러 장 고를 수 있습니다)</span>
+          <input type="file" id="photo-file" accept="image/jpeg,image/png,image/webp" multiple required>
         </label>
         <label class="field">
-          <span class="field-label">설명 (선택)</span>
+          <span class="field-label">설명 (선택 · 고른 사진 전체에 함께 붙습니다)</span>
           <input type="text" id="photo-caption" maxlength="60" placeholder="예) 운동장의 옥희">
         </label>
-        <button type="submit" class="cta">올리기</button>
+        <button type="submit" id="upload-submit" class="cta">올리기</button>
         <p class="form-msg" id="upload-msg" role="status" aria-live="polite"></p>
         <p class="note">
           업로드 전에 브라우저에서 사진을 축소하며, 이 과정에서 촬영 위치(GPS) 정보가 제거됩니다.
@@ -102,6 +102,6 @@
 
 </main>
 
-<script src="admin.js?v=3"></script>
+<script src="admin.js?v=4"></script>
 </body>
 </html>

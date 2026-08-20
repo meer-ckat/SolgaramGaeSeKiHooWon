@@ -146,17 +146,41 @@ el("entry-form").addEventListener("submit", async (event) => {
 // 사진
 // ============================================================
 
+// 구형 모바일 브라우저에는 createImageBitmap이 없어 <img>로 대신 읽습니다.
+function loadImage(file) {
+  if (typeof createImageBitmap === "function") {
+    return createImageBitmap(file);
+  }
+
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(image);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("이미지를 읽지 못했습니다."));
+    };
+    image.src = url;
+  });
+}
+
 // 캔버스로 다시 그리면 크기가 줄고 EXIF(촬영 위치 등)가 함께 사라집니다.
 async function shrink(file) {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_PHOTO_PX / Math.max(bitmap.width, bitmap.height));
-  const width = Math.round(bitmap.width * scale);
-  const height = Math.round(bitmap.height * scale);
+  const source = await loadImage(file);
+  const sourceWidth = source.width || source.naturalWidth;
+  const sourceHeight = source.height || source.naturalHeight;
+
+  const scale = Math.min(1, MAX_PHOTO_PX / Math.max(sourceWidth, sourceHeight));
+  const width = Math.round(sourceWidth * scale);
+  const height = Math.round(sourceHeight * scale);
 
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
-  canvas.getContext("2d").drawImage(bitmap, 0, 0, width, height);
+  canvas.getContext("2d").drawImage(source, 0, 0, width, height);
 
   return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
 }
@@ -170,36 +194,66 @@ function toBase64(blob) {
   });
 }
 
+// 결과 메시지는 화면 밖에 있으면 못 보므로 보이는 곳으로 끌어옵니다.
+function showUploadMsg(text, kind) {
+  msg("upload-msg", text, kind);
+  el("upload-msg").scrollIntoView({ block: "center" });
+}
+
 el("upload-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const file = el("photo-file").files[0];
-  if (!file) return;
 
-  msg("upload-msg", "사진을 준비하는 중입니다.");
+  const files = Array.prototype.slice.call(el("photo-file").files);
+  if (!files.length) return;
 
-  try {
-    const blob = await shrink(file);
-    const base64 = await toBase64(blob);
+  // 설명은 고른 사진 전체에 같이 붙습니다.
+  const caption = el("photo-caption").value;
+  const submit = el("upload-submit");
 
-    msg("upload-msg", "올리는 중입니다.");
+  submit.disabled = true;
 
-    const data = await callApi("uploadPhoto", {
-      mimeType: "image/jpeg",
-      dataBase64: base64,
-      caption: el("photo-caption").value,
-    });
+  let done = 0;
+  const failed = [];
 
-    if (data.ok) {
-      msg("upload-msg", "올렸습니다.", "good");
-      el("photo-file").value = "";
-      el("photo-caption").value = "";
-      loadPhotos();
-    } else {
-      msg("upload-msg", errorText(data.error, data.retryAfter), "bad");
+  for (let i = 0; i < files.length; i++) {
+    showUploadMsg("올리는 중입니다. (" + (i + 1) + "/" + files.length + ")");
+
+    try {
+      const blob = await shrink(files[i]);
+      const base64 = await toBase64(blob);
+
+      const data = await callApi("uploadPhoto", {
+        mimeType: "image/jpeg",
+        dataBase64: base64,
+        caption: caption,
+      });
+
+      if (data.ok) {
+        done++;
+      } else {
+        failed.push(files[i].name + " (" + errorText(data.error, data.retryAfter) + ")");
+      }
+    } catch (err) {
+      failed.push(files[i].name);
     }
-  } catch (err) {
-    msg("upload-msg", "사진을 올리지 못했습니다.", "bad");
   }
+
+  submit.disabled = false;
+
+  // 성공하든 실패하든 파일 선택은 비웁니다. 같은 사진이 두 번 올라가는 걸 막습니다.
+  el("photo-file").value = "";
+
+  if (!failed.length) {
+    el("photo-caption").value = "";
+    showUploadMsg(done + "장 올렸습니다.", "good");
+  } else {
+    showUploadMsg(
+      done + "장 올렸고 " + failed.length + "장 실패했습니다: " + failed.join(", "),
+      "bad"
+    );
+  }
+
+  loadPhotos();
 });
 
 async function loadPhotos() {

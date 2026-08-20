@@ -97,7 +97,14 @@ function renderDonations(donations) {
   }
 }
 
+// 10초마다 다시 그리면 사진이 매번 깜빡이므로, 목록이 바뀌었을 때만 그립니다.
+let lastPhotoKey = null;
+
 function renderGallery(photos) {
+  const key = photos.map((p) => p.id + ":" + p.caption).join("|");
+  if (key === lastPhotoKey) return;
+  lastPhotoKey = key;
+
   const list = document.getElementById("gallery");
   list.textContent = "";
 
@@ -175,6 +182,7 @@ function showLoadError() {
     '<tr><td colspan="3" class="empty">내역을 불러오지 못했습니다.</td></tr>';
   document.getElementById("gallery").innerHTML =
     '<li class="gallery-empty">사진을 불러오지 못했습니다.</li>';
+  lastPhotoKey = null;
 }
 
 async function loadLedger() {
@@ -215,3 +223,32 @@ async function copyAccountNumber() {
 document.getElementById("copy-account").addEventListener("click", copyAccountNumber);
 
 loadLedger();
+
+// ============================================================
+// 자동 새로고침 (10초)
+// ============================================================
+
+const REFRESH_MS = 10000;
+let refreshTimer = null;
+
+function startRefresh() {
+  if (refreshTimer) return;
+  refreshTimer = setInterval(loadLedger, REFRESH_MS);
+}
+
+function stopRefresh() {
+  clearInterval(refreshTimer);
+  refreshTimer = null;
+}
+
+// 탭이 안 보일 때는 멈춰서 쓸데없는 요청을 막습니다.
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    stopRefresh();
+  } else {
+    loadLedger();
+    startRefresh();
+  }
+});
+
+startRefresh();
