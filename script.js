@@ -16,17 +16,26 @@ function renderSummary(data) {
   const received = Number(data.received) || 0;
   const spent = Number(data.spent) || 0;
   const balance = Number(data.balance) || received - spent;
-  const percent = goal > 0 ? Math.round((received / goal) * 100) : 0;
+
+  const percent = goal > 0
+    ? Math.round((received / goal) * 100)
+    : 0;
 
   document.getElementById("received").textContent = won(received);
   document.getElementById("goal").textContent = won(goal);
   document.getElementById("spent").textContent = won(spent);
   document.getElementById("balance").textContent = won(balance);
 
-  // 100% 초과 시 바는 100%에서 멈추고 실제 퍼센트는 텍스트로 표시
-  document.getElementById("percent").textContent = "목표의 " + percent + "% 달성";
-  document.getElementById("bar-fill").style.width = Math.min(percent, 100) + "%";
-  document.getElementById("bar").setAttribute("aria-valuenow", Math.min(percent, 100));
+  document.getElementById("percent").textContent =
+    "목표의 " + percent + "% 달성";
+
+  document.getElementById("bar-fill").style.width =
+    Math.min(percent, 100) + "%";
+
+  document.getElementById("bar").setAttribute(
+    "aria-valuenow",
+    Math.min(percent, 100)
+  );
 }
 
 function renderExpenses(expenses) {
