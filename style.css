@@ -15,7 +15,7 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
   color: var(--text);
-  background: #fff;
+  background: #000;
   line-height: 1.65;
 }
 
@@ -82,9 +82,10 @@ h2 {
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: var(--muted);
-  margin: 0.25rem 0 1.25rem;
+    font-size: 1.1rem;
+    color: #ff7400;
+    margin: 0.25rem 0 1.25rem;
+    font-weight: bold;
 }
 
 .intro {
@@ -93,16 +94,16 @@ h2 {
 }
 
 .cta {
-  display: inline-block;
-  background: var(--text);
-  color: #fff;
-  font-size: 1.05rem;
-  font-weight: 700;
-  font-family: inherit;
-  padding: 0.85rem 2.5rem;
-  border: none;
-  text-decoration: none;
-  cursor: pointer;
+    display: inline-block;
+    background: #FF8D00;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-family: inherit;
+    padding: 0.85rem 2.5rem;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .cta:hover {
