@@ -22,6 +22,13 @@
   box-sizing: border-box;
 }
 
+/* .comment-form { display: flex } 같은 클래스 규칙이
+   hidden 속성(브라우저 기본 display:none)을 이겨 버립니다.
+   숨기라고 한 것은 반드시 숨겨지게 합니다. */
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
