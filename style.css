@@ -715,6 +715,56 @@ button:focus-visible {
   font-size: 0.9rem;
 }
 
+/* 구글 로그인 */
+
+.login-bar {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+}
+
+.login-state {
+  margin: 0.6rem 0 0;
+  font-size: 0.9rem;
+  color: var(--marigold);
+}
+
+.login-state:empty {
+  display: none;
+}
+
+.login-nick {
+  display: block;
+  margin-top: 0.75rem;
+  max-width: 18em;
+}
+
+.login-nick input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.6rem;
+  color: var(--text);
+  background: var(--bar-bg);
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+}
+
+.login-nick input:focus-visible {
+  outline: 3px solid var(--marigold);
+  outline-offset: 2px;
+}
+
+#google-logout {
+  margin-top: 0.75rem;
+}
+
+.cta-danger:hover {
+  color: #FF8A7A;
+  border-color: #FF8A7A;
+}
+
 /* 관리자 댓글 목록 */
 
 .admin-comments {

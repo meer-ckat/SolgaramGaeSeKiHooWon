@@ -231,11 +231,25 @@ function renderComments(all) {
 
 async function submitComment(box) {
   const board = box.dataset.board;
-  const nick = box.querySelector(".comment-nick");
   const body = box.querySelector(".comment-body");
   const note = box.querySelector(".comment-msg");
 
+  const nickname = document.getElementById("my-nickname").value.trim();
+
   note.className = "form-msg comment-msg";
+
+  if (!googleToken) {
+    note.className = "form-msg comment-msg form-msg-bad";
+    note.textContent = "구글 로그인이 필요합니다.";
+    return;
+  }
+
+  if (!nickname) {
+    note.className = "form-msg comment-msg form-msg-bad";
+    note.textContent = "닉네임을 입력해 주세요.";
+    return;
+  }
+
   note.textContent = "등록 중입니다.";
 
   try {
@@ -245,8 +259,9 @@ async function submitComment(box) {
       body: JSON.stringify({
         action: "addComment",
         board: board,
-        nickname: nick.value,
+        nickname: nickname,
         body: body.value,
+        idToken: googleToken,
       }),
     });
     const data = await res.json();
@@ -256,14 +271,21 @@ async function submitComment(box) {
       body.value = "";
       lastCommentKey[board] = null;
       loadLedger();
-    } else if (data.error === "nick_blocked") {
-      note.className = "form-msg comment-msg form-msg-bad";
+      return;
+    }
+
+    note.className = "form-msg comment-msg form-msg-bad";
+
+    if (data.error === "nick_blocked") {
       note.textContent = "관리자·운영자처럼 헷갈리는 닉네임은 쓸 수 없습니다.";
     } else if (data.error === "too_many") {
-      note.className = "form-msg comment-msg form-msg-bad";
       note.textContent = "댓글이 너무 빠르게 올라오고 있습니다. 잠시 후 다시 시도해 주세요.";
+    } else if (data.error === "banned") {
+      note.textContent = "댓글 작성이 제한된 계정입니다.";
+    } else if (data.error === "login_required") {
+      note.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+      setLoggedOut();
     } else {
-      note.className = "form-msg comment-msg form-msg-bad";
       note.textContent = "등록하지 못했습니다.";
     }
   } catch (err) {
@@ -271,6 +293,91 @@ async function submitComment(box) {
     note.textContent = "서버에 연결하지 못했습니다.";
   }
 }
+
+// ============================================================
+// 구글 로그인
+// ============================================================
+//
+// 구글이 서명한 토큰을 받아 Apps Script로 넘깁니다.
+// 비밀번호는 이 사이트가 만지지도 저장하지도 않습니다.
+// 이메일은 차단 용도로 시트에만 남고 화면에는 닉네임만 나옵니다.
+
+const GOOGLE_CLIENT_ID = "719302024935-25psog12r9dd0facogtph49v6o48eh4h.apps.googleusercontent.com";
+
+let googleToken = "";
+
+function setLoggedIn(token, email) {
+  googleToken = token;
+
+  document.getElementById("login-state").textContent = email + " 으로 로그인했습니다.";
+  document.getElementById("google-btn").hidden = true;
+  document.getElementById("google-logout").hidden = false;
+  document.getElementById("my-nickname").closest(".login-nick").hidden = false;
+
+  document.querySelectorAll(".comment-form").forEach((f) => { f.hidden = false; });
+  document.querySelectorAll(".comment-login-note").forEach((p) => { p.hidden = true; });
+}
+
+function setLoggedOut() {
+  googleToken = "";
+
+  document.getElementById("login-state").textContent = "";
+  document.getElementById("google-btn").hidden = false;
+  document.getElementById("google-logout").hidden = true;
+  document.getElementById("my-nickname").closest(".login-nick").hidden = true;
+
+  document.querySelectorAll(".comment-form").forEach((f) => { f.hidden = true; });
+  document.querySelectorAll(".comment-login-note").forEach((p) => { p.hidden = false; });
+}
+
+// 토큰 안에 담긴 이메일을 화면 표시용으로만 꺼냅니다.
+// 진짜 검증은 서버에서 구글에 직접 물어봅니다.
+function peekEmail(token) {
+  try {
+    const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(decodeURIComponent(escape(atob(payload)))).email || "";
+  } catch (err) {
+    return "";
+  }
+}
+
+function handleGoogleLogin(response) {
+  setLoggedIn(response.credential, peekEmail(response.credential));
+}
+
+document.getElementById("google-logout").addEventListener("click", () => {
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+  setLoggedOut();
+});
+
+// 닉네임은 다음에 또 쓰도록 기억해 둡니다.
+const savedNick = localStorage.getItem("nickname");
+if (savedNick) document.getElementById("my-nickname").value = savedNick;
+
+document.getElementById("my-nickname").addEventListener("change", (event) => {
+  localStorage.setItem("nickname", event.target.value.trim());
+});
+
+window.addEventListener("load", () => {
+  if (!window.google || !google.accounts || !google.accounts.id) return;
+
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleLogin,
+    auto_select: true,
+  });
+
+  google.accounts.id.renderButton(document.getElementById("google-btn"), {
+    theme: "filled_black",
+    size: "large",
+    text: "signin_with",
+    locale: "ko",
+  });
+});
+
+setLoggedOut();
 
 document.querySelectorAll(".comments").forEach((box) => {
   box.querySelector(".comment-form").addEventListener("submit", (event) => {

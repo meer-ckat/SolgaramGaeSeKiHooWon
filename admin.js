@@ -367,9 +367,15 @@ async function loadComments() {
       hide.type = "button";
       hide.className = "cta cta-quiet";
       hide.textContent = "내리기";
-      hide.addEventListener("click", () => hideComment(item, hide));
+      hide.addEventListener("click", () => hideComment(item, hide, false));
 
-      li.append(where, nick, sep, body, at, hide);
+      const ban = document.createElement("button");
+      ban.type = "button";
+      ban.className = "cta cta-quiet cta-danger";
+      ban.textContent = "내리고 작성자 차단";
+      ban.addEventListener("click", () => hideComment(item, ban, true));
+
+      li.append(where, nick, sep, body, at, hide, ban);
       list.appendChild(li);
     }
   } catch (err) {
@@ -377,16 +383,22 @@ async function loadComments() {
   }
 }
 
-async function hideComment(item, button) {
+async function hideComment(item, button, ban) {
   const preview = item.nickname + " - " + item.body;
-  if (!window.confirm(preview + " — 이 댓글을 사이트에서 내릴까요?")) return;
+  const question = ban
+    ? " — 이 댓글을 내리고 작성자의 구글 계정을 차단할까요? 차단하면 이 사람은 더 이상 댓글을 쓸 수 없습니다."
+    : " — 이 댓글을 사이트에서 내릴까요?";
+  if (!window.confirm(preview + question)) return;
 
 
 
   button.disabled = true;
   try {
-    const data = await callApi("hideComment", { id: item.id });
+    const data = await callApi("hideComment", { id: item.id, ban: ban === true });
     if (data.ok) {
+      if (ban && !data.banned) {
+        window.alert("댓글은 내렸지만, 이 댓글에는 계정 정보가 없어 차단하지 못했습니다.");
+      }
       loadComments();
     } else {
       button.disabled = false;
