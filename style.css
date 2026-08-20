@@ -640,7 +640,6 @@ button:focus-visible {
   align-items: center;
 }
 
-.comment-nick,
 .comment-body {
   font-family: inherit;
   font-size: 0.95rem;
@@ -651,17 +650,11 @@ button:focus-visible {
   border-radius: 0.25rem;
 }
 
-.comment-nick {
-  width: 8rem;
-  flex: 0 0 auto;
-}
-
 .comment-body {
   flex: 1 1 14rem;
   min-width: 0;
 }
 
-.comment-nick:focus-visible,
 .comment-body:focus-visible {
   outline: 3px solid var(--marigold);
   outline-offset: 2px;
