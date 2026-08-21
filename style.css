@@ -345,6 +345,18 @@ h2 {
   font-variant-numeric: tabular-nums;
 }
 
+.copyright {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.copyright p {
+  margin: 0.35rem 0;
+}
+
 .expenses th,
 .expenses td {
   text-align: left;
