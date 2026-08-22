@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>옥희 도치 후원</title>
   <meta name="description" content="솔가람고등학교의 회색늑대의 아종이자 학명은 Canis lupus familiaris인 옥희와 도치를 위한 옥도단 운영 후원 페이지">
-  <link rel="stylesheet" href="style.css?v=17">
+  <link rel="stylesheet" href="style.css?v=19">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -16,83 +16,53 @@
   <span class="logo-text" hidden>솔가람고등학교</span>
   <span class="header-right">
     <span class="header-note">학생 운영 후원 페이지</span>
-    <a href="admin.html" class="admin-link">ADMIN</a>
   </span>
 </header>
 
 <main>
   <section class="hero" aria-labelledby="page-title">
-    <h1 id="page-title">옥희 도치 후원하기</h1>
-    <p class="subtitle">솔가람고등학교의 회색늑대의 아종이자 학명은 Canis lupus familiaris인 옥희와 도치를 위한 옥도단 운영 후원 페이지</p>
+    <h1 id="page-title">옥희와 도치를<br>함께 돌봐주세요.</h1>
     <p class="intro">
-      후원금은 솔가람고등학교에서 지내는 옥희와 도치의
-      사료, 간식, 병원비, 생활용품에 사용됩니다.
+      솔가람고등학교에서 지내는 두 강아지의
+      사료·간식·병원비를 학생들이 직접 관리합니다.
     </p>
     <div class="hero-actions">
       <a href="#donate" class="cta">후원하기</a>
+      <a href="#ledger" class="cta cta-quiet">사용 내역 보기</a>
       <button type="button" id="share" class="cta cta-quiet">공유하기</button>
     </div>
     <p class="share-msg" id="share-msg" role="status" aria-live="polite"></p>
+    <p class="hero-badges">학생 운영 · 사용 내역 전부 공개 · 금융정보 수집 안 함</p>
+
+    <!-- 학명 농담은 살리되, 첫 화면의 핵심 문장을 가리지 않게 아래로 내렸습니다. -->
+    <p class="hero-aside">
+      회색늑대의 아종, Canis lupus familiaris.<br>
+      쉽게 말하면 개입니다.
+    </p>
   </section>
 
   <section aria-labelledby="status-title">
-    <h2 id="status-title">이번 주의 후원금</h2>
-    <p class="big-amount" id="received">—</p>
-    <div class="bar" role="progressbar" aria-labelledby="status-title"
-         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar">
-      <div class="bar-fill" id="bar-fill"></div>
+    <div class="status-panel">
+      <h2 id="status-title" class="panel-title">이번 주 후원</h2>
+
+      <div class="status-head">
+        <p class="big-amount" id="received">—</p>
+        <p class="percent" id="percent"></p>
+      </div>
+
+      <div class="bar" role="progressbar" aria-labelledby="status-title"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar">
+        <div class="bar-fill" id="bar-fill"></div>
+      </div>
+
+      <dl class="figures">
+        <div><dt>목표</dt><dd id="goal">—</dd></div>
+        <div><dt>지출</dt><dd id="spent">—</dd></div>
+        <div><dt>잔액</dt><dd id="balance">—</dd></div>
+      </dl>
+
+      <p class="note" id="load-status" role="status" hidden>후원 현황을 불러오지 못했습니다.</p>
     </div>
-    <p class="percent" id="percent"></p>
-    <dl class="figures">
-      <div><dt>이번 주 목표</dt><dd id="goal">—</dd></div>
-      <div><dt>이번 주 지출</dt><dd id="spent">—</dd></div>
-      <div><dt>잔액</dt><dd id="balance">—</dd></div>
-    </dl>
-    <p class="note" id="load-status" role="status" hidden>후원 현황을 불러오지 못했습니다.</p>
-  </section>
-
-  <section aria-labelledby="gallery-title">
-    <h2 id="gallery-title">사진첩</h2>
-    <ul class="gallery" id="gallery">
-      <li class="gallery-empty">사진을 불러오는 중입니다.</li>
-    </ul>
-
-    <div class="comments" data-board="photos">
-      <h3 class="comments-title">사진첩 댓글</h3>
-      <div id="login-bar" class="login-bar">
-      <p class="note">
-        댓글을 쓰려면 구글 로그인이 필요합니다. 이메일 주소를 받아 두지만
-        화면에는 닉네임만 보이며, 부적절한 댓글 작성자를 차단하는 용도로만 씁니다.
-        자세한 내용은 <a href="privacy.html">개인정보 처리방침</a>을 봐 주세요.
-        만 14세 미만은 댓글을 쓸 수 없습니다.
-      </p>
-      <div id="google-btn"></div>
-      <p id="login-state" class="login-state" role="status" aria-live="polite"></p>
-      <label class="login-nick">
-        <span class="field-label">닉네임 (댓글에 이 이름으로 표시됩니다)</span>
-        <input type="text" id="my-nickname" maxlength="20" placeholder="닉네임" autocomplete="off">
-      </label>
-      <button type="button" id="google-logout" class="cta cta-quiet" hidden>로그아웃</button>
-    </div>
-
-      <form class="comment-form" hidden>
-        <label class="visually-hidden" for="body-photos">댓글</label>
-        <input type="text" id="body-photos" class="comment-body" maxlength="200"
-               placeholder="댓글을 남겨 주세요" autocomplete="off" required>
-        <button type="submit" class="cta cta-quiet">등록</button>
-        <p class="form-msg comment-msg" role="status" aria-live="polite"></p>
-      </form>
-      <ul class="comment-list"><li class="comment-empty">불러오는 중입니다.</li></ul>
-    </div>
-  </section>
-
-  <section aria-labelledby="about-title">
-    <h2 id="about-title">옥희 · 도치</h2>
-    <p>
-      옥희와 도치는 솔가람고등학교에서 지내는 두 마리 강아지입니다.
-      학생들이 직접 돌보고 있으며, 후원금은 두 강아지를 위해서만 사용하고
-      사용 내역을 아래에 모두 공개합니다.
-    </p>
   </section>
 
   <section id="donate" aria-labelledby="donate-title">
@@ -106,22 +76,46 @@
       마음만 감사히 받겠습니다.
     </p>
 
-    <dl class="account" id="account-box">
-      <div><dt>은행</dt><dd>토스뱅크</dd></div>
-      <div><dt>계좌번호</dt><dd id="account-number">1908-4060-9427</dd></div>
-      <div><dt>예금주</dt><dd>한동혁</dd></div>
-    </dl>
-    <button type="button" id="copy-account" class="cta">계좌번호 복사</button>
-    <p class="copy-feedback" id="copy-feedback" role="status" aria-live="polite"></p>
-    <p class="note">토스 또는 사용하는 은행 앱에서 위 계좌로 송금할 수 있습니다.</p>
-    <p class="note">
-      이 페이지는 결제를 처리하지 않으며, 카드번호·비밀번호 등
-      어떤 금융 정보도 입력받지 않습니다.
-    </p>
+    <!-- 후원을 멈추면 계좌 안내 전체가 통째로 사라집니다.
+         계좌 목록과 복사 버튼을 따로 숨기면 안내 문구가 남아 헷갈립니다. -->
+    <div id="donate-open">
+      <!-- 계좌번호가 주인공입니다. 은행·예금주는 보조 정보로 작게 둡니다.
+           라벨은 화면에 안 보이지만 화면 낭독기에는 읽힙니다.
+           계좌번호 라벨을 #account-number 안에 넣으면 복사할 때 같이 딸려갑니다. -->
+      <div class="account">
+        <p class="account-bank"><span class="visually-hidden">은행 </span>토스뱅크</p>
+        <p class="visually-hidden">계좌번호</p>
+        <p class="account-number" id="account-number">1908-4060-9427</p>
+        <p class="account-holder"><span class="visually-hidden">예금주 </span>한동혁</p>
+      </div>
+      <button type="button" id="copy-account" class="cta">계좌번호 복사</button>
+      <p class="copy-feedback" id="copy-feedback" role="status" aria-live="polite"></p>
+      <p class="note">토스 또는 사용하는 은행 앱에서 위 계좌로 송금할 수 있습니다.</p>
+      <p class="note">
+        이 페이지는 결제를 처리하지 않으며, 카드번호·비밀번호 등
+        어떤 금융 정보도 입력받지 않습니다.
+      </p>
+    </div>
   </section>
 
-  <section aria-labelledby="ledger-title">
-    <h2 id="ledger-title">사용 내역</h2>
+  <section aria-labelledby="about-title">
+    <h2 id="about-title">옥희 · 도치</h2>
+    <p>
+      옥희와 도치는 솔가람고등학교에서 지내는 두 마리 강아지입니다.
+      학생들이 직접 돌보고 있으며, 후원금은 두 강아지를 위해서만 사용하고
+      사용 내역을 아래에 모두 공개합니다.
+    </p>
+    <ul class="gallery" id="gallery">
+      <li class="gallery-empty">사진을 불러오는 중입니다.</li>
+    </ul>
+  </section>
+
+  <!-- 나간 돈과 들어온 돈을 한 섹션으로 묶습니다.
+       따로 두면 각각 그냥 표로 보이지만, 묶으면 공개하겠다는 약속으로 읽힙니다. -->
+  <section id="ledger" aria-labelledby="ledger-title">
+    <h2 id="ledger-title">투명하게 공개합니다</h2>
+
+    <h3 class="sub-title">사용한 돈</h3>
     <table class="expenses">
       <caption class="visually-hidden">공개된 지출 내역</caption>
       <thead>
@@ -136,22 +130,7 @@
       </tbody>
     </table>
 
-    <div class="comments" data-board="expenses">
-      <h3 class="comments-title">사용 내역 댓글</h3>
-      <form class="comment-form" hidden>
-        <label class="visually-hidden" for="body-expenses">댓글</label>
-        <input type="text" id="body-expenses" class="comment-body" maxlength="200"
-               placeholder="댓글을 남겨 주세요" autocomplete="off" required>
-        <button type="submit" class="cta cta-quiet">등록</button>
-        <p class="form-msg comment-msg" role="status" aria-live="polite"></p>
-      </form>
-      <p class="note comment-login-note">댓글은 <a href="#gallery-title">사진첩</a>에서 로그인한 뒤 쓸 수 있습니다.</p>
-      <ul class="comment-list"><li class="comment-empty">불러오는 중입니다.</li></ul>
-    </div>
-  </section>
-
-  <section aria-labelledby="donations-title">
-    <h2 id="donations-title">후원 내역</h2>
+    <h3 class="sub-title">받은 후원</h3>
     <p class="note">후원자 이름은 공개하지 않습니다. 표시명은 후원자가 원한 경우에만 표시됩니다.</p>
     <table class="expenses">
       <caption class="visually-hidden">공개된 후원 내역</caption>
@@ -166,17 +145,37 @@
         <tr><td colspan="3" class="empty">내역을 불러오는 중입니다.</td></tr>
       </tbody>
     </table>
+  </section>
 
-    <div class="comments" data-board="donations">
-      <h3 class="comments-title">후원 내역 댓글</h3>
+  <!-- 댓글판은 하나뿐입니다. 게시판 이름은 그대로 photos 라서
+       사진첩에 달려 있던 기존 댓글이 그대로 이어집니다. -->
+  <section aria-labelledby="comments-title">
+    <h2 id="comments-title">옥희 · 도치에게 한마디</h2>
+
+    <div class="comments" data-board="photos">
+      <div id="login-bar" class="login-bar">
+        <p class="note">
+          댓글을 쓰려면 구글 로그인이 필요합니다. 이메일 주소를 받아 두지만
+          화면에는 닉네임만 보이며, 부적절한 댓글 작성자를 차단하는 용도로만 씁니다.
+          자세한 내용은 <a href="privacy.html">개인정보 처리방침</a>을 봐 주세요.
+          만 14세 미만은 댓글을 쓸 수 없습니다.
+        </p>
+        <div id="google-btn"></div>
+        <p id="login-state" class="login-state" role="status" aria-live="polite"></p>
+        <label class="login-nick">
+          <span class="field-label">닉네임 (댓글에 이 이름으로 표시됩니다)</span>
+          <input type="text" id="my-nickname" maxlength="20" placeholder="닉네임" autocomplete="off">
+        </label>
+        <button type="button" id="google-logout" class="cta cta-quiet" hidden>로그아웃</button>
+      </div>
+
       <form class="comment-form" hidden>
-        <label class="visually-hidden" for="body-donations">댓글</label>
-        <input type="text" id="body-donations" class="comment-body" maxlength="200"
+        <label class="visually-hidden" for="body-photos">댓글</label>
+        <input type="text" id="body-photos" class="comment-body" maxlength="200"
                placeholder="댓글을 남겨 주세요" autocomplete="off" required>
         <button type="submit" class="cta cta-quiet">등록</button>
         <p class="form-msg comment-msg" role="status" aria-live="polite"></p>
       </form>
-      <p class="note comment-login-note">댓글은 <a href="#gallery-title">사진첩</a>에서 로그인한 뒤 쓸 수 있습니다.</p>
       <ul class="comment-list"><li class="comment-empty">불러오는 중입니다.</li></ul>
     </div>
   </section>
@@ -190,24 +189,27 @@
 </dialog>
 
 <footer>
-  <p>
-    이 페이지는 솔가람고등학교 학생들이 운영하는 후원 안내 페이지이며,
-    학교 공식 페이지가 아닙니다.
+  <p class="footer-line">
+    © 2026 옥도단<br>
+    학생 운영 · 학교 공식 페이지가 아닙니다.
   </p>
 
-  <p>문의: <a href="mailto:sunsetbaby@naver.com">sunsetbaby@naver.com</a></p>
-
-  <p>
-    <a href="privacy.html">개인정보 처리방침</a>
+  <p class="footer-links">
+    <a href="mailto:sunsetbaby@naver.com">문의</a> ·
+    <a href="privacy.html">개인정보 처리방침</a> ·
+    <a href="https://github.com/meer-ckat/SolgaramGaeSeKiHooWon"
+       target="_blank" rel="noopener noreferrer">소스 코드</a>
   </p>
 
-  <p>
-    욕설·비방·개인정보가 담긴 댓글은 예고 없이 삭제되며,
-    반복되면 댓글 작성이 제한됩니다.
-  </p>
+  <!-- 법적 고지는 다 필요하지만 늘 펼쳐 둘 필요는 없습니다.
+       details 는 브라우저 기본 기능이라 따로 스크립트가 없습니다. -->
+  <details class="legal">
+    <summary>법적 고지 및 라이선스</summary>
 
-  <div class="copyright">
-    <p>© 2026 옥도단.</p>
+    <p>
+      욕설·비방·개인정보가 담긴 댓글은 예고 없이 삭제되며,
+      반복되면 댓글 작성이 제한됩니다.
+    </p>
 
     <p>
       이 사이트의 소스 코드는
@@ -222,8 +224,10 @@
       MIT License의 적용 대상이 아니며,
       각 저작권자의 권리가 유지됩니다.
     </p>
-  </div>
+  </details>
+
+  <p class="footer-admin"><a href="admin.html">ADMIN</a></p>
 </footer>
-<script src="script.js?v=17"></script>
+<script src="script.js?v=19"></script>
 </body>
 </html>

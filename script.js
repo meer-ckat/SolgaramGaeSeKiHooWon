@@ -19,8 +19,10 @@ function applyDonationCap(yearReceived) {
   const over = Number(yearReceived) >= DONATION_STOP;
 
   document.getElementById("donate-stop").hidden = !over;
-  document.getElementById("account-box").hidden = over;
-  document.getElementById("copy-account").hidden = over;
+
+  // 계좌 목록·복사 버튼·안내 문구를 한 덩어리로 감춥니다.
+  // 따로 숨기면 "송금할 수 있습니다" 같은 문구가 남아 후원을 계속 받는 것처럼 보입니다.
+  document.getElementById("donate-open").hidden = over;
 }
 
 function renderSummary(data) {
@@ -38,8 +40,8 @@ function renderSummary(data) {
   document.getElementById("spent").textContent = won(spent);
   document.getElementById("balance").textContent = won(balance);
 
-  document.getElementById("percent").textContent =
-    "목표의 " + percent + "% 달성";
+  // 패널 안에서 금액 오른쪽에 붙으므로 "목표의 …달성"까지 쓰면 줄이 넘칩니다.
+  document.getElementById("percent").textContent = percent + "%";
 
   document.getElementById("bar-fill").style.width =
     Math.min(percent, 100) + "%";
@@ -381,7 +383,6 @@ function setLoggedIn(token, email) {
   document.getElementById("my-nickname").closest(".login-nick").hidden = false;
 
   document.querySelectorAll(".comment-form").forEach((f) => { f.hidden = false; });
-  document.querySelectorAll(".comment-login-note").forEach((p) => { p.hidden = true; });
 
   loadMyNickname();
 }
@@ -398,7 +399,6 @@ function setLoggedOut() {
   document.getElementById("my-nickname").closest(".login-nick").hidden = true;
 
   document.querySelectorAll(".comment-form").forEach((f) => { f.hidden = true; });
-  document.querySelectorAll(".comment-login-note").forEach((p) => { p.hidden = false; });
 }
 
 // 토큰 안에 담긴 이메일을 화면 표시용으로만 꺼냅니다.
