@@ -8,6 +8,7 @@
 const COMMENT_SHEET = "comments";
 const COMMENT_TRASH = "comments_삭제";
 const BANNED_SHEET = "banned";
+const USERS_SHEET = "users";
 const BOARDS = ["expenses", "donations", "photos"];
 
 const NICK_MAX = 20;
@@ -72,23 +73,55 @@ function isBanned_(email) {
   return false;
 }
 
+// 한 계정이 댓글마다 다른 닉네임을 쓰면 한 사람이 여러 명처럼 보입니다.
+// 처음 쓴 닉네임을 users 시트에 적어 두고 그 뒤로는 그것만 씁니다.
+function lockedNickname_(email) {
+  const sheet = ss_().getSheetByName(USERS_SHEET);
+  if (!sheet) return "";
+
+  const rows = sheet.getDataRange().getValues();
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]).trim().toLowerCase() === email) {
+      return String(rows[i][1] || "").trim();
+    }
+  }
+  return "";
+}
+
 function addComment_(req) {
   const email = verifyGoogleToken_(req.idToken);
   if (!email) return json_({ ok: false, error: "login_required" });
 
   if (isBanned_(email)) return json_({ ok: false, error: "banned" });
 
+  const locked = lockedNickname_(email);
+
+  // 화면이 "내 닉네임이 뭔지"만 물어보는 경우 (댓글은 쓰지 않음)
+  if (req.probe === true) {
+    return json_({ ok: true, nickname: locked });
+  }
+
   const board = String(req.board || "");
   if (BOARDS.indexOf(board) < 0) return json_({ ok: false, error: "bad_board" });
 
-  const nickname = String(req.nickname || "").trim().slice(0, NICK_MAX);
+  // 이미 정해진 닉네임이 있으면 보내온 값은 무시합니다.
+  const nickname = locked || String(req.nickname || "").trim().slice(0, NICK_MAX);
   const body = String(req.body || "").trim().slice(0, BODY_MAX);
   if (!nickname || !body) return json_({ ok: false, error: "empty" });
 
-  const flat = nickname.toLowerCase().replace(/\s/g, "");
-  for (let i = 0; i < NICK_BLOCKED.length; i++) {
-    if (flat.indexOf(NICK_BLOCKED[i]) >= 0) return json_({ ok: false, error: "nick_blocked" });
+  if (!locked) {
+    const flat = nickname.toLowerCase().replace(/\s/g, "");
+    for (let i = 0; i < NICK_BLOCKED.length; i++) {
+      if (flat.indexOf(NICK_BLOCKED[i]) >= 0) return json_({ ok: false, error: "nick_blocked" });
+    }
   }
+
+  // 등록 버튼 연타로 같은 댓글이 여러 번 올라가는 것을 막습니다.
+  const fingerprint = email + "|" + board + "|" + body;
+  if (cache_().get("dup:" + fingerprint)) {
+    return json_({ ok: true, nickname: nickname, duplicate: true });
+  }
+  cache_().put("dup:" + fingerprint, "1", 120);
 
   const count = Number(cache_().get("cmt") || 0) + 1;
   cache_().put("cmt", String(count), COMMENT_WINDOW_SEC);
@@ -108,7 +141,19 @@ function addComment_(req) {
     String(Date.now()),
   ]);
 
-  return json_({ ok: true });
+  // 처음 쓴 사람이면 닉네임을 확정해 둡니다.
+  if (!locked) {
+    const users = ss_().getSheetByName(USERS_SHEET);
+    if (users) {
+      users.appendRow([
+        email,
+        safeCell_(nickname),
+        Utilities.formatDate(new Date(), TIMEZONE, "yyyy-MM-dd HH:mm"),
+      ]);
+    }
+  }
+
+  return json_({ ok: true, nickname: nickname });
 }
 
 // 관리자만: 댓글을 휴지통 시트로 옮기고 원본에서 지웁니다.

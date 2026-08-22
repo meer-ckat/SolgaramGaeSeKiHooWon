@@ -243,8 +243,14 @@ function renderComments(all) {
 
 async function submitComment(box) {
   const board = box.dataset.board;
+  const form = box.querySelector(".comment-form");
   const body = box.querySelector(".comment-body");
+  const button = form.querySelector("button[type=submit]");
   const note = box.querySelector(".comment-msg");
+
+  // 등록을 연타하면 같은 댓글이 여러 번 올라갑니다.
+  // 요청이 끝날 때까지 입력칸과 버튼을 잠급니다.
+  if (form.dataset.busy === "1") return;
 
   const nickname = document.getElementById("my-nickname").value.trim();
 
@@ -263,6 +269,10 @@ async function submitComment(box) {
   }
 
   note.textContent = "등록 중입니다.";
+
+  form.dataset.busy = "1";
+  button.disabled = true;
+  body.disabled = true;
 
   try {
     const res = await fetch(CONFIG.ledgerEndpoint, {
@@ -283,6 +293,10 @@ async function submitComment(box) {
       body.value = "";
       lastCommentKey[board] = null;
       loadLedger();
+
+      // 서버가 확정한 닉네임으로 고정합니다.
+      if (data.nickname) lockNickname(data.nickname);
+
       return;
     }
 
@@ -303,6 +317,10 @@ async function submitComment(box) {
   } catch (err) {
     note.className = "form-msg comment-msg form-msg-bad";
     note.textContent = "서버에 연결하지 못했습니다.";
+  } finally {
+    form.dataset.busy = "";
+    button.disabled = false;
+    body.disabled = false;
   }
 }
 
@@ -318,6 +336,34 @@ const GOOGLE_CLIENT_ID = "719302024935-25psog12r9dd0facogtph49v6o48eh4h.apps.goo
 
 let googleToken = "";
 
+// 한 계정이 댓글마다 다른 닉네임을 쓰면 한 사람이 여러 명처럼 보입니다.
+// 처음 정한 닉네임을 서버가 확정하면 여기서 잠급니다.
+function lockNickname(nickname) {
+  const input = document.getElementById("my-nickname");
+  input.value = nickname;
+  input.readOnly = true;
+
+  const label = input.closest(".login-nick").querySelector(".field-label");
+  label.textContent = "닉네임 (처음 정한 이름으로 고정됩니다)";
+}
+
+// 로그인 직후, 이 계정에 이미 정해진 닉네임이 있는지 서버에 물어봅니다.
+async function loadMyNickname() {
+  if (!googleToken) return;
+
+  try {
+    const res = await fetch(CONFIG.ledgerEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "addComment", probe: true, idToken: googleToken }),
+    });
+    const data = await res.json();
+    if (data.ok && data.nickname) lockNickname(data.nickname);
+  } catch (err) {
+    // 못 물어봐도 등록할 때 서버가 확정해 줍니다.
+  }
+}
+
 function setLoggedIn(token, email) {
   googleToken = token;
 
@@ -328,10 +374,15 @@ function setLoggedIn(token, email) {
 
   document.querySelectorAll(".comment-form").forEach((f) => { f.hidden = false; });
   document.querySelectorAll(".comment-login-note").forEach((p) => { p.hidden = true; });
+
+  loadMyNickname();
 }
 
 function setLoggedOut() {
   googleToken = "";
+
+  const nickInput = document.getElementById("my-nickname");
+  nickInput.readOnly = false;
 
   document.getElementById("login-state").textContent = "";
   document.getElementById("google-btn").hidden = false;
