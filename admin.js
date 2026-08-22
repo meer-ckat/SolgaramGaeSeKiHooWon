@@ -24,6 +24,21 @@ function el(id) {
   return document.getElementById(id);
 }
 
+// 등록 버튼을 잠깐 감춥니다.
+// 비활성화만 하면 브라우저·기기에 따라 두 번 눌리는 경우가 있어 아예 숨깁니다.
+function lockSubmit(form) {
+  if (form.dataset.busy === "1") return null;
+
+  const button = form.querySelector("button[type=submit]");
+  form.dataset.busy = "1";
+  if (button) button.hidden = true;
+
+  return function unlock() {
+    form.dataset.busy = "";
+    if (button) button.hidden = false;
+  };
+}
+
 function msg(id, text, kind) {
   const node = el(id);
   node.textContent = text;
@@ -68,6 +83,10 @@ function showPanel() {
 
 el("login-form").addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  const unlock = lockSubmit(event.target);
+  if (!unlock) return;
+
   const input = el("token-input").value;
 
   if (!TOKEN_PATTERN.test(input)) {
@@ -80,6 +99,7 @@ el("login-form").addEventListener("submit", async (event) => {
     } else {
       msg("login-msg", "토큰 형식이 올바르지 않습니다.", "bad");
     }
+    unlock();
     return;
   }
 
@@ -99,6 +119,8 @@ el("login-form").addEventListener("submit", async (event) => {
   } catch (err) {
     token = "";
     msg("login-msg", "서버에 연결하지 못했습니다.", "bad");
+  } finally {
+    unlock();
   }
 });
 
@@ -117,6 +139,10 @@ el("logout").addEventListener("click", () => {
 
 el("entry-form").addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  const unlock = lockSubmit(event.target);
+  if (!unlock) return;
+
   msg("entry-msg", "저장 중입니다.");
 
   try {
@@ -140,6 +166,8 @@ el("entry-form").addEventListener("submit", async (event) => {
     }
   } catch (err) {
     msg("entry-msg", "서버에 연결하지 못했습니다.", "bad");
+  } finally {
+    unlock();
   }
 });
 
@@ -207,14 +235,16 @@ el("upload-form").addEventListener("submit", async (event) => {
   const files = Array.prototype.slice.call(el("photo-file").files);
   if (!files.length) return;
 
+  const unlock = lockSubmit(event.target);
+  if (!unlock) return;
+
   // 설명은 고른 사진 전체에 같이 붙습니다.
   const caption = el("photo-caption").value;
-  const submit = el("upload-submit");
-
-  submit.disabled = true;
 
   let done = 0;
   const failed = [];
+
+  try {
 
   for (let i = 0; i < files.length; i++) {
     showUploadMsg("올리는 중입니다. (" + (i + 1) + "/" + files.length + ")");
@@ -239,8 +269,6 @@ el("upload-form").addEventListener("submit", async (event) => {
     }
   }
 
-  submit.disabled = false;
-
   // 성공하든 실패하든 파일 선택은 비웁니다. 같은 사진이 두 번 올라가는 걸 막습니다.
   el("photo-file").value = "";
 
@@ -252,6 +280,11 @@ el("upload-form").addEventListener("submit", async (event) => {
       done + "장 올렸고 " + failed.length + "장 실패했습니다: " + failed.join(", "),
       "bad"
     );
+  }
+
+  } finally {
+    // 도중에 무슨 일이 생겨도 등록 버튼은 반드시 돌아옵니다.
+    unlock();
   }
 
   loadPhotos();

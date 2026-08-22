@@ -241,16 +241,27 @@ function renderComments(all) {
   });
 }
 
+// 등록 버튼을 잠깐 감춥니다.
+// 비활성화만 하면 브라우저·기기에 따라 두 번 눌리는 경우가 있어 아예 숨깁니다.
+// 돌려받은 함수를 부르면 버튼이 다시 나타납니다.
+function lockSubmit(form) {
+  if (form.dataset.busy === "1") return null;
+
+  const button = form.querySelector("button[type=submit]");
+  form.dataset.busy = "1";
+  if (button) button.hidden = true;
+
+  return function unlock() {
+    form.dataset.busy = "";
+    if (button) button.hidden = false;
+  };
+}
+
 async function submitComment(box) {
   const board = box.dataset.board;
   const form = box.querySelector(".comment-form");
   const body = box.querySelector(".comment-body");
-  const button = form.querySelector("button[type=submit]");
   const note = box.querySelector(".comment-msg");
-
-  // 등록을 연타하면 같은 댓글이 여러 번 올라갑니다.
-  // 요청이 끝날 때까지 입력칸과 버튼을 잠급니다.
-  if (form.dataset.busy === "1") return;
 
   const nickname = document.getElementById("my-nickname").value.trim();
 
@@ -270,9 +281,8 @@ async function submitComment(box) {
 
   note.textContent = "등록 중입니다.";
 
-  form.dataset.busy = "1";
-  button.disabled = true;
-  body.disabled = true;
+  const unlock = lockSubmit(form);
+  if (!unlock) return;
 
   try {
     const res = await fetch(CONFIG.ledgerEndpoint, {
@@ -318,9 +328,7 @@ async function submitComment(box) {
     note.className = "form-msg comment-msg form-msg-bad";
     note.textContent = "서버에 연결하지 못했습니다.";
   } finally {
-    form.dataset.busy = "";
-    button.disabled = false;
-    body.disabled = false;
+    unlock();
   }
 }
 
