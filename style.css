@@ -407,6 +407,21 @@ footer a:hover {
   text-decoration: underline;
 }
 
+/* 저작권·라이선스 표기.
+   #666 은 이 배경(#0B0B0B)에서 명암비 3.4:1 로 읽기 어렵고,
+   #ddd 구분선은 다른 선보다 밝게 튀어서 테마 변수로 맞췄습니다. */
+.copyright {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.copyright p {
+  margin: 0.35rem 0;
+}
+
 /* ========================================
    접근성
 ======================================== */
