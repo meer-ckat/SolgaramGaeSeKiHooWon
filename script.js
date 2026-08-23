@@ -52,6 +52,12 @@ function renderSummary(data) {
   );
 }
 
+// "2026-08-20" -> "2026.08.20"
+// 사용 내역과 후원 내역이 같은 식을 각각 갖고 있어 한쪽만 고치기 쉬웠습니다.
+function shortDate(value) {
+  return String(value).replaceAll("-", ".");
+}
+
 function renderExpenses(expenses) {
   const body = document.getElementById("expenses-body");
   body.textContent = "";
@@ -67,8 +73,8 @@ function renderExpenses(expenses) {
     const tr = document.createElement("tr");
 
     const date = document.createElement("td");
-    // "2026-08-20" -> "08.20"
-    date.textContent = String(item.date).slice(5).replace("-", ".");
+    date.className = "date";
+    date.textContent = shortDate(item.date);
 
     const desc = document.createElement("td");
     desc.textContent = item.description;
@@ -97,7 +103,8 @@ function renderDonations(donations) {
     const tr = document.createElement("tr");
 
     const date = document.createElement("td");
-    date.textContent = String(item.date).slice(5).replace("-", ".");
+    date.className = "date";
+    date.textContent = shortDate(item.date);
 
     const name = document.createElement("td");
     name.textContent = item.name || "익명";
@@ -307,7 +314,7 @@ async function submitComment(box) {
       loadLedger();
 
       // 서버가 확정한 닉네임으로 고정합니다.
-      if (data.nickname) lockNickname(data.nickname);
+      if (data.nickname) lockNickname(data.nickname, data.cooldownSec);
 
       return;
     }
@@ -347,15 +354,134 @@ const GOOGLE_CLIENT_ID = "719302024935-25psog12r9dd0facogtph49v6o48eh4h.apps.goo
 let googleToken = "";
 
 // 한 계정이 댓글마다 다른 닉네임을 쓰면 한 사람이 여러 명처럼 보입니다.
-// 처음 정한 닉네임을 서버가 확정하면 여기서 잠급니다.
-function lockNickname(nickname) {
-  const input = document.getElementById("my-nickname");
+// 서버가 확정한 닉네임으로 잠그고, 바꾸기는 아래 쿨다운을 거칩니다.
+let lockedNick = "";
+let lockedCooldownSec = 0;
+
+function nickEl(id) {
+  return document.getElementById(id);
+}
+
+// 3661초 -> "2시간", 259200초 -> "3일". 초 단위까지 보여 줄 이유가 없습니다.
+// 한 시간이 안 남았는데 올림해서 "1시간"이라고 하면 실제보다 길게 들립니다.
+function waitText(seconds) {
+  const left = Number(seconds) || 0;
+  if (left < 3600) return "잠시";
+
+  const hours = Math.ceil(left / 3600);
+  if (hours >= 24) return Math.ceil(hours / 24) + "일";
+  return hours + "시간";
+}
+
+function lockNickname(nickname, cooldownSec) {
+  const input = nickEl("my-nickname");
+  lockedNick = nickname;
+  lockedCooldownSec = Number(cooldownSec) || 0;
+
   input.value = nickname;
   input.readOnly = true;
 
-  const label = input.closest(".login-nick").querySelector(".field-label");
-  label.textContent = "닉네임 (처음 정한 이름으로 고정됩니다)";
+  input.closest(".login-nick").querySelector(".field-label").textContent =
+    "닉네임 (댓글에 이 이름으로 표시됩니다)";
+
+  nickEl("nick-actions").hidden = false;
+  nickEl("nick-save").hidden = true;
+  nickEl("nick-cancel").hidden = true;
+
+  const edit = nickEl("nick-edit");
+  edit.hidden = false;
+
+  const wait = lockedCooldownSec;
+  edit.disabled = wait > 0;
+  edit.textContent = wait > 0
+    ? waitText(wait) + " 뒤에 바꿀 수 있습니다"
+    : "닉네임 바꾸기";
 }
+
+function startEditNickname() {
+  const input = nickEl("my-nickname");
+  input.readOnly = false;
+  input.focus();
+  input.select();
+
+  nickEl("nick-edit").hidden = true;
+  nickEl("nick-save").hidden = false;
+  nickEl("nick-cancel").hidden = false;
+  nickEl("nick-msg").textContent = "";
+}
+
+function cancelEditNickname() {
+  nickEl("nick-msg").textContent = "";
+
+  // 0을 넘기면 쿨다운 중에 취소했을 때 버튼이 다시 열립니다.
+  lockNickname(lockedNick, lockedCooldownSec);
+}
+
+async function saveNickname() {
+  const input = nickEl("my-nickname");
+  const note = nickEl("nick-msg");
+  const nickname = input.value.trim();
+
+  note.className = "form-msg";
+
+  if (!nickname) {
+    note.className = "form-msg form-msg-bad";
+    note.textContent = "닉네임을 입력해 주세요.";
+    return;
+  }
+
+  const save = nickEl("nick-save");
+  save.disabled = true;
+  note.textContent = "바꾸는 중입니다.";
+
+  try {
+    const res = await fetch(CONFIG.ledgerEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "addComment",
+        changeNickname: true,
+        nickname: nickname,
+        idToken: googleToken,
+      }),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      lockNickname(data.nickname, data.cooldownSec);
+      note.className = "form-msg form-msg-good";
+      note.textContent = "닉네임을 바꿨습니다. 지난 댓글의 이름도 함께 바뀝니다.";
+
+      // 목록에 옛 이름이 남아 있으므로 다시 받아옵니다.
+      lastCommentKey.photos = null;
+      loadLedger();
+      return;
+    }
+
+    note.className = "form-msg form-msg-bad";
+
+    if (data.error === "nick_cooldown") {
+      note.textContent = "너무 자주 바꿉니다. " + waitText(data.retryAfterSec) + " 뒤에 다시 시도해 주세요.";
+      lockNickname(lockedNick, data.retryAfterSec);
+    } else if (data.error === "nick_blocked") {
+      note.textContent = "관리자·운영자처럼 헷갈리는 닉네임은 쓸 수 없습니다.";
+    } else if (data.error === "login_required") {
+      note.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+      setLoggedOut();
+    } else {
+      note.textContent = "바꾸지 못했습니다.";
+    }
+  } catch (err) {
+    note.className = "form-msg form-msg-bad";
+    note.textContent = "서버에 연결하지 못했습니다.";
+  } finally {
+    save.disabled = false;
+  }
+}
+
+nickEl("nick-edit").addEventListener("click", startEditNickname);
+nickEl("nick-save").addEventListener("click", saveNickname);
+nickEl("nick-cancel").addEventListener("click", cancelEditNickname);
 
 // 로그인 직후, 이 계정에 이미 정해진 닉네임이 있는지 서버에 물어봅니다.
 async function loadMyNickname() {
@@ -368,7 +494,7 @@ async function loadMyNickname() {
       body: JSON.stringify({ action: "addComment", probe: true, idToken: googleToken }),
     });
     const data = await res.json();
-    if (data.ok && data.nickname) lockNickname(data.nickname);
+    if (data.ok && data.nickname) lockNickname(data.nickname, data.cooldownSec);
   } catch (err) {
     // 못 물어봐도 등록할 때 서버가 확정해 줍니다.
   }
@@ -392,6 +518,11 @@ function setLoggedOut() {
 
   const nickInput = document.getElementById("my-nickname");
   nickInput.readOnly = false;
+
+  lockedNick = "";
+  lockedCooldownSec = 0;
+  document.getElementById("nick-actions").hidden = true;
+  document.getElementById("nick-msg").textContent = "";
 
   document.getElementById("login-state").textContent = "";
   document.getElementById("google-btn").hidden = false;
