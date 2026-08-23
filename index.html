@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>옥희 도치 후원</title>
   <meta name="description" content="솔가람고등학교의 회색늑대의 아종이자 학명은 Canis lupus familiaris인 옥희와 도치를 위한 옥도단 운영 후원 페이지">
-  <link rel="stylesheet" href="style.css?v=19">
+  <link rel="stylesheet" href="style.css?v=21">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -166,6 +166,16 @@
           <span class="field-label">닉네임 (댓글에 이 이름으로 표시됩니다)</span>
           <input type="text" id="my-nickname" maxlength="20" placeholder="닉네임" autocomplete="off">
         </label>
+
+        <!-- 닉네임을 바꾸면 지난 댓글의 이름도 같이 바뀝니다.
+             자주 바꾸면 시트를 통째로 다시 쓰게 되므로 서버가 기간을 둡니다. -->
+        <div class="nick-actions" id="nick-actions" hidden>
+          <button type="button" id="nick-edit" class="cta cta-quiet">닉네임 바꾸기</button>
+          <button type="button" id="nick-save" class="cta cta-quiet" hidden>저장</button>
+          <button type="button" id="nick-cancel" class="cta cta-quiet" hidden>취소</button>
+        </div>
+        <p class="form-msg" id="nick-msg" role="status" aria-live="polite"></p>
+
         <button type="button" id="google-logout" class="cta cta-quiet" hidden>로그아웃</button>
       </div>
 
@@ -228,6 +238,6 @@
 
   <p class="footer-admin"><a href="admin.html">ADMIN</a></p>
 </footer>
-<script src="script.js?v=19"></script>
+<script src="script.js?v=21"></script>
 </body>
 </html>

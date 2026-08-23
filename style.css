@@ -418,6 +418,10 @@ h2 {
   color: var(--text);
 }
 
+.expenses .date {
+  white-space: nowrap;
+}
+
 .expenses .num {
   text-align: right;
 
@@ -950,6 +954,33 @@ button:focus-visible {
 .login-nick input:focus-visible {
   outline: 3px solid var(--marigold);
   outline-offset: 2px;
+}
+
+.nick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* 모바일에서 .cta 는 한 줄을 다 쓰지만, 여기서는 나란히 놓입니다. */
+.nick-actions .cta {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.nick-actions .cta:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.nick-actions .cta:disabled:hover {
+  color: var(--muted);
+  border-color: var(--line);
+}
+
+#nick-msg {
+  margin-top: 0.5rem;
 }
 
 #google-logout {

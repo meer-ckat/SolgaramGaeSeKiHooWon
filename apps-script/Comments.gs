@@ -19,6 +19,11 @@ const COMMENT_SHOW = 50;
 const COMMENT_LIMIT = 20;
 const COMMENT_WINDOW_SEC = 600;
 
+// 닉네임 변경 간격.
+// 바꿀 때마다 지난 댓글의 이름까지 전부 고쳐 쓰므로, 연타하면 시트가 통째로 갈립니다.
+// 읽는 사람 입장에서도 이름이 자주 바뀌면 누가 누군지 알 수 없습니다.
+const NICK_COOLDOWN_DAYS = 7;
+
 // 관리자인 척하는 닉네임 차단
 const NICK_BLOCKED = ["관리자", "운영자", "옥도단", "admin", "administrator",
   "운영진", "어드민", "에드민", "운영", "공지", "학교", "솔가람"];
@@ -73,19 +78,110 @@ function isBanned_(email) {
   return false;
 }
 
-// 한 계정이 댓글마다 다른 닉네임을 쓰면 한 사람이 여러 명처럼 보입니다.
-// 처음 쓴 닉네임을 users 시트에 적어 두고 그 뒤로는 그것만 씁니다.
-function lockedNickname_(email) {
+// users 시트에서 이 계정의 행을 찾습니다.
+// A=이메일, B=닉네임, C=등록 시각, D=닉네임 변경 시각(밀리초)
+// 못 찾으면 row 가 0 입니다. 시트 행 번호라서 1부터 셉니다.
+function userRow_(email) {
   const sheet = ss_().getSheetByName(USERS_SHEET);
-  if (!sheet) return "";
+  if (!sheet) return { sheet: null, row: 0, nickname: "", changedAt: 0 };
 
   const rows = sheet.getDataRange().getValues();
   for (let i = 1; i < rows.length; i++) {
     if (String(rows[i][0]).trim().toLowerCase() === email) {
-      return String(rows[i][1] || "").trim();
+      return {
+        sheet: sheet,
+        row: i + 1,
+        nickname: String(rows[i][1] || "").trim(),
+        changedAt: Number(rows[i][3]) || 0,
+      };
     }
   }
+  return { sheet: sheet, row: 0, nickname: "", changedAt: 0 };
+}
+
+// 한 계정이 댓글마다 다른 닉네임을 쓰면 한 사람이 여러 명처럼 보입니다.
+// 처음 쓴 닉네임을 users 시트에 적어 두고, 바꾸려면 아래 쿨다운을 거칩니다.
+function lockedNickname_(email) {
+  return userRow_(email).nickname;
+}
+
+// 닉네임 검사. 처음 정할 때와 바꿀 때 같은 기준을 써야 합니다.
+// 전에는 처음 정할 때만 검사해서, 바꾸기로 "관리자"를 통과시킬 수 있었습니다.
+// 문제가 없으면 빈 문자열을 돌려줍니다.
+function nickError_(nickname) {
+  if (!nickname) return "empty";
+
+  const flat = nickname.toLowerCase().replace(/\s/g, "");
+  for (let i = 0; i < NICK_BLOCKED.length; i++) {
+    if (flat.indexOf(NICK_BLOCKED[i]) >= 0) return "nick_blocked";
+  }
   return "";
+}
+
+// 다음에 닉네임을 바꿀 수 있을 때까지 남은 초. 지금 바꿀 수 있으면 0.
+function nickCooldownSec_(changedAt) {
+  if (!changedAt) return 0;
+
+  const passed = Date.now() - changedAt;
+  const need = NICK_COOLDOWN_DAYS * 24 * 60 * 60 * 1000;
+  if (passed >= need) return 0;
+
+  return Math.ceil((need - passed) / 1000);
+}
+
+// 닉네임을 바꾸면 지난 댓글에 남은 옛 이름도 같이 고칩니다.
+// 그러지 않으면 한 사람이 이름 두 개로 보여, 닉네임을 고정한 이유가 없어집니다.
+//
+// ponytail: 행마다 한 번씩 씁니다. 댓글이 수천 개가 되면 느려지므로,
+// 그때는 열 전체를 한 번에 읽고 setValues 로 한 번에 쓰도록 바꾸면 됩니다.
+// 쿨다운이 있어 자주 돌지는 않습니다.
+function renameComments_(email, nickname) {
+  const sheet = ss_().getSheetByName(COMMENT_SHEET);
+  if (!sheet) return 0;
+
+  const rows = sheet.getDataRange().getValues();
+  let changed = 0;
+
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][5] || "").trim().toLowerCase() !== email) continue;
+    sheet.getRange(i + 1, 3).setValue(safeCell_(nickname));
+    changed++;
+  }
+  return changed;
+}
+
+// 닉네임 바꾸기. doPost 를 건드리지 않으려고 probe 와 같은 자리에서 처리합니다.
+function changeNickname_(email, requested, user) {
+  const nickname = String(requested || "").trim().slice(0, NICK_MAX);
+
+  const bad = nickError_(nickname);
+  if (bad) return json_({ ok: false, error: bad });
+
+  // 아직 닉네임이 없으면 바꾸는 것이 아니라 처음 정하는 것입니다.
+  if (!user.nickname) return json_({ ok: false, error: "no_nickname" });
+
+  if (nickname === user.nickname) {
+    return json_({ ok: true, nickname: nickname, cooldownSec: nickCooldownSec_(user.changedAt) });
+  }
+
+  const waitSec = nickCooldownSec_(user.changedAt);
+  if (waitSec > 0) {
+    return json_({ ok: false, error: "nick_cooldown", retryAfterSec: waitSec });
+  }
+
+  if (!user.sheet || !user.row) return json_({ ok: false, error: "not_ready" });
+
+  const now = Date.now();
+  user.sheet.getRange(user.row, 2).setValue(safeCell_(nickname));
+  user.sheet.getRange(user.row, 4).setValue(String(now));
+
+  renameComments_(email, nickname);
+
+  return json_({
+    ok: true,
+    nickname: nickname,
+    cooldownSec: nickCooldownSec_(now),
+  });
 }
 
 function addComment_(req) {
@@ -94,11 +190,21 @@ function addComment_(req) {
 
   if (isBanned_(email)) return json_({ ok: false, error: "banned" });
 
-  const locked = lockedNickname_(email);
+  const user = userRow_(email);
+  const locked = user.nickname;
 
   // 화면이 "내 닉네임이 뭔지"만 물어보는 경우 (댓글은 쓰지 않음)
   if (req.probe === true) {
-    return json_({ ok: true, nickname: locked });
+    return json_({
+      ok: true,
+      nickname: locked,
+      cooldownSec: nickCooldownSec_(user.changedAt),
+    });
+  }
+
+  // 닉네임 바꾸기 (댓글은 쓰지 않음)
+  if (req.changeNickname === true) {
+    return changeNickname_(email, req.nickname, user);
   }
 
   const board = String(req.board || "");
@@ -110,10 +216,8 @@ function addComment_(req) {
   if (!nickname || !body) return json_({ ok: false, error: "empty" });
 
   if (!locked) {
-    const flat = nickname.toLowerCase().replace(/\s/g, "");
-    for (let i = 0; i < NICK_BLOCKED.length; i++) {
-      if (flat.indexOf(NICK_BLOCKED[i]) >= 0) return json_({ ok: false, error: "nick_blocked" });
-    }
+    const bad = nickError_(nickname);
+    if (bad) return json_({ ok: false, error: bad });
   }
 
   // 등록 버튼 연타로 같은 댓글이 여러 번 올라가는 것을 막습니다.
@@ -145,10 +249,12 @@ function addComment_(req) {
   if (!locked) {
     const users = ss_().getSheetByName(USERS_SHEET);
     if (users) {
+      // D열(변경 시각)은 비워 둡니다. 처음 한 번은 쿨다운 없이 바꿀 수 있습니다.
       users.appendRow([
         email,
         safeCell_(nickname),
         Utilities.formatDate(new Date(), TIMEZONE, "yyyy-MM-dd HH:mm"),
+        "",
       ]);
     }
   }
@@ -269,6 +375,17 @@ function 댓글시트_만들기() {
   if (!ss.getSheetByName(BANNED_SHEET)) {
     ss.insertSheet(BANNED_SHEET).appendRow(["이메일", "차단 시각"]);
     Logger.log("banned 시트를 만들었습니다.");
+  }
+
+  // users 시트가 없으면 lockedNickname_ 이 늘 빈 값을 돌려주어
+  // 닉네임 고정이 통째로 동작하지 않습니다.
+  const users = ss.getSheetByName(USERS_SHEET);
+  if (!users) {
+    ss.insertSheet(USERS_SHEET)
+      .appendRow(["이메일", "닉네임", "등록 시각", "닉네임 변경 시각"]);
+    Logger.log("users 시트를 만들었습니다.");
+  } else if (!users.getRange("D1").getValue()) {
+    users.getRange("D1").setValue("닉네임 변경 시각");
   }
 
   Logger.log("설정 완료.");
